@@ -1,9 +1,6 @@
-#include <sstream>
-
 #include "Log.h"
-#include "Utils.h"
 
-Log::Log(LOG_LEVEL logLevel, const char* fileInfo, const char* type) : m_FileName(fileInfo), m_Type(type)
+Log::Log(LOG_LEVEL logLevel, std::string fileInfo, std::string type) : m_FileName(fileInfo), m_Type(type)
 {
 	ChangeLogLevel(logLevel);
 }
@@ -18,43 +15,51 @@ LOG_LEVEL Log::GetCurrentLogLevel()
 	return (LOG_LEVEL)m_LogLevel.load();
 }
 
-void Log::Write(std::string msg, LOG_LEVEL logLevel = LOG_LEVEL::INFO)
+void Log::Write(std::string msg) { Log::Write(msg, LOG_LEVEL::INFO); }
+void Log::Write(std::string msg, LOG_LEVEL logLevel)
 {
-	if (m_LogLevel < (int)logLevel) return;
+	if (m_LogLevel.load() < (int)logLevel) return;
 
 	char szpath[256] = { 0, };
 	char szbuff[512] = { 0, };
 
-	std::string time = GetTime();
-	std::string date = GetDate();
+	std::string time = utils::GetTime();
+	std::string date = utils::GetDate();
 
 	std::stringstream ss;
+	ss << "[" << date << "-" << time << "] -> " << msg;
 
-	ss << '[' << date << '-' << time << ']';
-	std::string currentDateTime = ss.str();
-
-	// _snprintf_s(szbuff, 512, "%s(%s)->", szdate, sztime);
-
-	// sprintf_s(szpath, "./Log/%s/%s_[%s].txt", m_Type, m_FileName, date.c_str());
+	std::string logMsg = ss.str();
 
 	ss.str(std::string());
-	ss << "./Log/" << m_Type << "/" << m_FileName << "_[" << date.c_str() << "].txt";
+	ss << "./Log/" << m_Type << "/[" << date.c_str() << "]_" << m_FileName << ".txt";
 	std::string filePath = ss.str();
 
-	FILE* fp = nullptr;
-	auto err = fopen_s(&fp, szpath, "at");
+	// Is iofstream thread safe ?
+	// https://stackoverflow.com/questions/20211935/is-ofstream-thread-safe
+
+	#define MAP_ITER		first
+	#define MUTEX_PTR		second
+	#define INSERT_SUCCESS	second
+
+	// map insert tip
+	// https://yonmy.com/archives/9
+	std::mutex* fileLock;
+	auto res = m_Lock.insert({ filePath, nullptr });
+	if (res.INSERT_SUCCESS)
+	{
+		res.MAP_ITER->MUTEX_PTR = new std::mutex();
+		fileLock = res.MAP_ITER->MUTEX_PTR;
+	}
+	else { fileLock = res.MAP_ITER->MUTEX_PTR; }
 
 	{
-		std::lock_guard<std::mutex>	lock(m_Lock);
-		if (fp != 0)
-		{
-			fwrite(szbuff, strlen(szbuff), 1, fp);
-			fclose(fp);
-			fp = NULL;
-		}
-		else
-		{
-			fwrite(szpath, strlen(szpath), 1, stdout);
-		}
+		std::lock_guard<std::mutex> lock(*fileLock);
+
+		// 경로 상에 폴더가 없으면 실패
+		using ios = std::ios_base;
+		std::ofstream out(filePath, ios::out | ios::app);
+		if (out.is_open()) { out << logMsg; }
+		else { std::cout << logMsg; }
 	}
 }

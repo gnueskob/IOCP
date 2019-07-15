@@ -1,12 +1,4 @@
-#include <Ws2tcpip.h>
-#include <thread>
-#include <string>
-#include <sstream>
-
 #include "Acceptor.h"
-#include "AIOException.h"
-
-#pragma comment(lib, "ws2_32.lib")
 
 Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 {
@@ -36,10 +28,12 @@ Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 	ThrowLastErrorIf(res == SOCKET_ERROR, "[listen()] Fail listen");
 	
 	std::stringstream ss;
-	ss << ip << '-' << port;
-	m_Log = new Log(LOG_LEVEL::DEBUG, ss.str().c_str());
+	ss << "[ip-" << ip << "]_[port-" << port << "]";
+	std::string fileInfo = ss.str();
+	std::string logType = std::string("Acceptor");
+	m_Log = new Log(LOG_LEVEL::DEBUG, fileInfo, logType);
 
-	m_Log->Write(LOG_LEVEL::INFO, "[%s, %d] accept started\n", ip, port);
+	m_Log->Write(utils::Format("[%s, %d] accept started\n", ip, port));
 }
 
 DWORD Acceptor::Accept()
@@ -54,15 +48,15 @@ DWORD Acceptor::Accept()
 
 		if (clientSocket == INVALID_SOCKET)
 		{
-			m_Log->Write(LOG_LEVEL::INFO, "Accept Error %u", ::GetLastError());
+			m_Log->Write(utils::Format("Accept Error %u", ::GetLastError()));
 			continue;
 		}
 
-		m_Log->Write(LOG_LEVEL::INFO, "Accepted %u.%u.%u.%u",
+		m_Log->Write(utils::Format("Accepted %u.%u.%u.%u",
 			addr.sin_addr.S_un.S_un_b.s_b1,
 			addr.sin_addr.S_un.S_un_b.s_b2,
 			addr.sin_addr.S_un.S_un_b.s_b3,
-			addr.sin_addr.S_un.S_un_b.s_b4);
+			addr.sin_addr.S_un.S_un_b.s_b4));
 
 		// Server socket register
 	}

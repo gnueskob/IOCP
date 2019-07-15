@@ -1,9 +1,17 @@
 #pragma once
 
+#include <Ws2tcpip.h>
 #include <windows.h>
+
+#include <thread>
+#include <string>
+#include <sstream>
 
 #include "Log.h"
 #include "Thread.h"
+#include "AIOException.h"
+
+#pragma comment(lib, "ws2_32.lib")
 
 class Acceptor : public Thread
 {
