@@ -149,11 +149,13 @@
     <ClInclude Include="IServerReceiver.h" />
     <ClInclude Include="IServerController.h" />
     <ClInclude Include="IOCPServerNet.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="Thread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Acceptor.cpp" />
     <ClCompile Include="IOCPServerNet.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="Thread.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

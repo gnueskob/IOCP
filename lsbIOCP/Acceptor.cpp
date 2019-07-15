@@ -1,5 +1,7 @@
 #include <Ws2tcpip.h>
 #include <thread>
+#include <string>
+#include <sstream>
 
 #include "Acceptor.h"
 #include "AIOException.h"
@@ -33,7 +35,11 @@ Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 	res = listen(m_listenSocket, 128);
 	ThrowLastErrorIf(res == SOCKET_ERROR, "[listen()] Fail listen");
 	
-	Log("[%s, %d] accept started\n", ip, port);
+	std::stringstream ss;
+	ss << ip << '-' << port;
+	m_Log = new Log(LOG_LEVEL::DEBUG, ss.str().c_str());
+
+	m_Log->Write(LOG_LEVEL::INFO, "[%s, %d] accept started\n", ip, port);
 }
 
 DWORD Acceptor::Accept()
@@ -48,11 +54,11 @@ DWORD Acceptor::Accept()
 
 		if (clientSocket == INVALID_SOCKET)
 		{
-			Log("Accept Error %u", ::GetLastError());
+			m_Log->Write(LOG_LEVEL::INFO, "Accept Error %u", ::GetLastError());
 			continue;
 		}
 
-		Log("Accepted %u.%u.%u.%u",
+		m_Log->Write(LOG_LEVEL::INFO, "Accepted %u.%u.%u.%u",
 			addr.sin_addr.S_un.S_un_b.s_b1,
 			addr.sin_addr.S_un.S_un_b.s_b2,
 			addr.sin_addr.S_un.S_un_b.s_b3,
@@ -67,46 +73,4 @@ DWORD Acceptor::Accept()
 DWORD Acceptor::Run()
 {
 	return Acceptor::Accept();
-}
-
-void Acceptor::Log(const char* format, ...)
-{
-	char szpath[256] = { 0, };
-	char szbuff[512] = { 0, };
-	char szdate[256] = { 0, };
-	char sztime[256] = { 0, };
-
-	// 시간 처리
-	// https://araikuma.tistory.com/597
-	// https://m.blog.naver.com/PostView.nhn?blogId=igazoa2&logNo=220271308803&proxyReferer=https%3A%2F%2Fwww.google.com%2F
-	time_t now;
-	time(&now);
-	tm date;
-	localtime_s(&date, &now);
-	strftime(szdate, 256, "%Y_%m_%d", &date);
-	_strtime_s(sztime, 256);
-
-	_snprintf_s(szbuff, 512, "%s(%s)->", szdate, sztime);
-
-	// 가변인자
-	// https://dojang.io/mod/page/view.php?id=577
-	// https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2008/d3xd30zz(v=vs.90)
-	va_list marker;
-	va_start(marker, format);
-	_vsnprintf_s(szbuff + strlen(szbuff), 512 - strlen(szbuff), _TRUNCATE, format, marker);
-	va_end(marker);
-
-	sprintf_s(szpath, "./acceptor/Accept_[%s-%u][%s].txt", m_ip, m_port, szdate);
-
-	fwrite(szpath, strlen(szpath), 1, stdout);
-
-	FILE* fp = nullptr;
-	auto err = fopen_s(&fp, szpath, "at");
-
-	if (fp != 0)
-	{
-		fwrite(szbuff, strlen(szbuff), 1, fp);
-		fclose(fp);
-		fp = NULL;
-	}
 }
