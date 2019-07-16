@@ -1,10 +1,6 @@
 #pragma once
 
-namespace lsbIOCP {
+class IServerController {
+public:
 
-	class IServerController {
-	public:
-
-	};
-
-}
+};
