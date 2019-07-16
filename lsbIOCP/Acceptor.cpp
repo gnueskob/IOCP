@@ -10,7 +10,7 @@ Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 		if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2)
 		{
 			WSACleanup();
-			ThrowLastErrorIf(true, "[WSAStartup()] WSA version not matched");
+			ThrowErrorIf(true, WSANOTINITIALISED, "[WSAStartup()] WSA version not matched");
 		}
 	}
 	m_listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -20,19 +20,14 @@ Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 	sin.sin_port = htons(port);
 	inet_pton(sin.sin_family = AF_INET, ip, &sin.sin_addr);
 
-	int res;
-	res = bind(m_listenSocket, (LPSOCKADDR)& sin, sizeof(sin));
+	auto res = bind(m_listenSocket, (LPSOCKADDR)& sin, sizeof(sin));
 	ThrowLastErrorIf(res == SOCKET_ERROR, "[bind()] Fail bind");
 
 	res = listen(m_listenSocket, 128);
 	ThrowLastErrorIf(res == SOCKET_ERROR, "[listen()] Fail listen");
-	
-	std::stringstream ss;
-	ss << "Server_p" << port;
-	std::string fileName = ss.str();
-	std::string logType = "Acceptor";
-	m_Log = new Log(LOG_LEVEL::DEBUG, fileName, logType);
 
+	m_Log = Log::GetInstance();
+	
 	m_Log->Write(utils::Format("[%s, %d] accept started\n", ip, port));
 }
 
