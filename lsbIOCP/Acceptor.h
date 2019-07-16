@@ -9,6 +9,7 @@
 
 #include "Log.h"
 #include "Thread.h"
+#include "AsyncIOServer.h"
 #include "AsyncIOException.h"
 
 // ws2_32.lib
@@ -27,9 +28,10 @@ private:
 	void Accept();
 
 private:
+	AsyncIOServer*	m_Server;
 	SOCKET			m_listenSocket;
 	const char*		m_ip;
 	const u_short	m_port;
-	bool			m_ws2_32_lib = false;
+	static bool		m_ws2_32_lib;
 	Log*			m_Log;
 };

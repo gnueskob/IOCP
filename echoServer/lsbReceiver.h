@@ -11,7 +11,7 @@ class lsbReceiver : public IServerReceiver
 	void notifyClientDisconnected() const;
 
 	// 메시지 수신 통보
-	void notifyMessage() const = 0;
+	void notifyMessage() const;
 
 	// 외부 서버 소켓 연결 요청 결과 통보
 	void notifyServerConnectingResult() const;

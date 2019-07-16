@@ -1,5 +1,7 @@
 #include "Acceptor.h"
 
+bool Acceptor::m_ws2_32_lib = false;
+
 Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 {
 	if (m_ws2_32_lib == false)
@@ -53,7 +55,7 @@ void Acceptor::Accept()
 			addr.sin_addr.S_un.S_un_b.s_b3,
 			addr.sin_addr.S_un.S_un_b.s_b4));
 
-		// Server socket register
+		// m_Server->registerSokcet()
 	}
 }
 

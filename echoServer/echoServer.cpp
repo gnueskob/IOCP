@@ -20,7 +20,6 @@ int main()
 	auto fileName = utils::Format("Server_port-%d", port);
 	Log::GetInstance()->Init(LOG_LEVEL::DEBUG, fileName);
 
-
 	Acceptor server(ip, port);
 
 	server.Start();

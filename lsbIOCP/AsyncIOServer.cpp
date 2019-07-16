@@ -5,16 +5,16 @@ size_t AsyncIOServer::SESSION_MAX_NUMBER = 1000;
 
 AsyncIOServer::AsyncIOServer(
 	IServerReceiver* pReceiver,
-	size_t ioMaxSize,
-	size_t threadNumber,
-	size_t sessionNumber,
+	DWORD ioMaxSize,
+	DWORD threadNumber,
+	DWORD sessionNumber,
 	std::string name)
-	: m_pReceiver(pReceiver),
-	m_IOMaxSize(ioMaxSize),
-	m_ThreadNum(threadNumber),
-	m_SessionNumber(sessionNumber),
-	m_ServerName(name),
-	m_IOCPHandle(INVALID_HANDLE_VALUE)
+	: m_pReceiver(pReceiver)
+	, m_IOMaxSize(ioMaxSize)
+	, m_ThreadNum(threadNumber)
+	, m_SessionNumber(sessionNumber)
+	, m_ServerName(name)
+	, m_IOCPHandle(INVALID_HANDLE_VALUE)
 {
 	if (name == "") 
 	{
@@ -30,13 +30,17 @@ AsyncIOServer::AsyncIOServer(
 
 	ThrowLastErrorIf(m_IOCPHandle == INVALID_HANDLE_VALUE, "Fail create IOCP");
 
-	m_pController = new Controller();
 	m_Log = Log::GetInstance();
 	
-	for (int i = 0; i < threadNumber; i++)
+	for (DWORD i = 0; i < threadNumber; i++)
 	{
 		m_Workers.push_back(std::make_shared<Worker>());
 	}
+
+	m_SessionMap = new sessionMap();
+
+	// TODO: Session 개수만큼 전부 만들어 놓고, 
+	// pointer만 동시성 큐잉, 얻고 반환하고
 
 	m_Log->Write("Server Initialized succesfully");
 };

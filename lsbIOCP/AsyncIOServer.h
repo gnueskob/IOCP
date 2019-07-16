@@ -7,38 +7,45 @@
 #include "Log.h"
 #include "Worker.h"
 #include "Session.h"
-#include "Controller.h"
 #include "AsyncIOException.h"
 
-using sessionMap = std::unordered_map<ULONG_PTR, Session*>;
+using workers = std::vector<std::shared_ptr<Worker>>;
 
-class AsyncIOServer
+class AsyncIOServer : public IServerController
 {
 public:
 	AsyncIOServer() = delete;
-	AsyncIOServer(IServerReceiver* pReceiver, size_t ioMaxSize, size_t threadNumber, size_t sessionNumber,  std::string name);
+	AsyncIOServer(IServerReceiver* pReceiver, DWORD ioMaxSize, DWORD threadNumber, DWORD sessionNumber,  std::string name);
 	~AsyncIOServer();
 	void Start();
 	void Stop();
 
-private:
-	IServerController* m_pController;
-	IServerReceiver* m_pReceiver;
+	// IServerController
+	DWORD postRecv(Session* session) override;
+	DWORD postSend() override;
+	DWORD disconnectSocket() override;
+	DWORD connectSocket() override;
+	DWORD registerSokcet() override;
 
-	HANDLE		m_IOCPHandle;
+	// Get session map information
+	virtual const sessionMap* GetSessionMap() const = 0;
+
+private:
+	IServerReceiver*	m_pReceiver;
+
+	HANDLE			m_IOCPHandle;
 
 	size_t			m_IOMaxSize;
 	static size_t	IO_MIN_SIZE;
 
-	size_t		m_SessionNumber;
+	size_t			m_SessionNumber;
 	static size_t	SESSION_MAX_NUMBER;
 
 	size_t		m_ThreadNum;
-	using workers = std::vector<std::shared_ptr<Worker>>;
 	workers		m_Workers;
 
 	std::string m_ServerName;
 	Log*		m_Log;
 
-	sessionMap	m_sessionMap;
+	sessionMap*	m_SessionMap;
 };

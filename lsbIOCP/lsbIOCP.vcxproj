@@ -147,7 +147,6 @@
     <ClInclude Include="Acceptor.h" />
     <ClInclude Include="AsyncIOException.h" />
     <ClInclude Include="AsyncIOServer.h" />
-    <ClInclude Include="Controller.h" />
     <ClInclude Include="IServer.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Session.h" />
@@ -160,7 +159,7 @@
     <ClCompile Include="Acceptor.cpp" />
     <ClCompile Include="AsyncIOException.cpp" />
     <ClCompile Include="AsyncIOServer.cpp" />
-    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="AsyncIOServerController.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="Utils.cpp" />
