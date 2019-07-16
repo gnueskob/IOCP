@@ -26,6 +26,7 @@ private:
 public:
 	Log() = delete;
 	Log(LOG_LEVEL logLevel, std::string fileInfo, std::string type);
+	~Log();
 
 	void ChangeLogLevel(LOG_LEVEL logLevel);
 
@@ -35,5 +36,5 @@ public:
 	void Write(std::string msg, LOG_LEVEL logLevel);
 
 private:
-	std::mutex* GetMutex(std::string filePath);
+	void FlushToFile(std::string& fileName, std::string& filePath, std::string& logMsg);
 };

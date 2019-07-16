@@ -26,7 +26,9 @@ std::string utils::GetTime()
 
 // 가변인자
 // https://dojang.io/mod/page/view.php?id=577
+// https://m.blog.naver.com/PostView.nhn?blogId=sinarn&logNo=130180639399&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 // https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2008/d3xd30zz(v=vs.90)
+// https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2008/kb57fad8(v=vs.90)
 std::string utils::Format(const char* format, ...)
 {
 	char szbuff[512] = { 0, };

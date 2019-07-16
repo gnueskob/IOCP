@@ -11,6 +11,8 @@
 #include "Thread.h"
 #include "AIOException.h"
 
+// ws2_32.lib
+// https://m.blog.naver.com/PostView.nhn?blogId=gimjoonbum&logNo=220065601788&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 #pragma comment(lib, "ws2_32.lib")
 
 class Acceptor : public Thread
@@ -19,10 +21,10 @@ public:
 	Acceptor() = delete;
 	Acceptor(const char* ip, const u_short port);
 	~Acceptor() = default;
-	DWORD Run() override;
+	void Run() override;
 
 private:
-	DWORD Accept();
+	void Accept();
 
 private:
 	SOCKET			m_listenSocket;

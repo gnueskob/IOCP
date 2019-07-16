@@ -10,7 +10,7 @@ public:
 	virtual ~Thread();
 
 	virtual	bool	IsStart();
-	virtual DWORD	Run() = 0;
+	virtual void	Run() = 0;
 	virtual	DWORD	Start();
 	virtual	void	Stop();
 	virtual	void	Join();

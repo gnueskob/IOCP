@@ -28,15 +28,15 @@ Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 	ThrowLastErrorIf(res == SOCKET_ERROR, "[listen()] Fail listen");
 	
 	std::stringstream ss;
-	ss << "[ip-" << ip << "]_[port-" << port << "]";
-	std::string fileInfo = ss.str();
+	ss << "Server_p" << port;
+	std::string fileName = ss.str();
 	std::string logType = "Acceptor";
-	m_Log = new Log(LOG_LEVEL::DEBUG, fileInfo, logType);
+	m_Log = new Log(LOG_LEVEL::DEBUG, fileName, logType);
 
 	m_Log->Write(utils::Format("[%s, %d] accept started\n", ip, port));
 }
 
-DWORD Acceptor::Accept()
+void Acceptor::Accept()
 {
 	SOCKET clientSocket = INVALID_SOCKET;
 	SOCKADDR_IN addr;
@@ -48,7 +48,7 @@ DWORD Acceptor::Accept()
 
 		if (clientSocket == INVALID_SOCKET)
 		{
-			m_Log->Write(utils::Format("Accept Error %u", ::GetLastError()));
+			m_Log->Write(utils::Format("[Error %u] Can not accept ", ::GetLastError()), LOG_LEVEL::ERR);
 			continue;
 		}
 
@@ -60,11 +60,10 @@ DWORD Acceptor::Accept()
 
 		// Server socket register
 	}
-
-	return 1;
 }
 
-DWORD Acceptor::Run()
+void Acceptor::Run()
 {
-	return Acceptor::Accept();
+	Acceptor::Accept();
+	m_Log->Write("Accept closed");
 }
