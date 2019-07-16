@@ -30,7 +30,7 @@ Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
 	std::stringstream ss;
 	ss << "[ip-" << ip << "]_[port-" << port << "]";
 	std::string fileInfo = ss.str();
-	std::string logType = std::string("Acceptor");
+	std::string logType = "Acceptor";
 	m_Log = new Log(LOG_LEVEL::DEBUG, fileInfo, logType);
 
 	m_Log->Write(utils::Format("[%s, %d] accept started\n", ip, port));

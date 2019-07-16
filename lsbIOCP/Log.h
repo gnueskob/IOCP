@@ -33,4 +33,7 @@ public:
 
 	void Write(std::string msg);
 	void Write(std::string msg, LOG_LEVEL logLevel);
+
+private:
+	std::mutex* GetMutex(std::string filePath);
 };
