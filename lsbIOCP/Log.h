@@ -14,19 +14,10 @@ enum LOG_LEVEL { DISABLE, INFO, WARN, ERR, TRACE, DEBUG };
 
 class Log
 {
-private:
-	// typedef vs using
-	// https://unikys.tistory.com/381
-	using mapStrMutex = std::map<std::string, std::mutex*>;
-	static mapStrMutex		m_Lock;
-	std::atomic<int>		m_LogLevel;
-	std::string				m_FileName;
-	std::string				m_Type;
-
 public:
-	Log() = delete;
-	Log(LOG_LEVEL logLevel, std::string fileInfo, std::string type);
-	~Log();
+	static Log* GetInstance();
+
+	void Init(LOG_LEVEL logLevel, std::string fileName);
 
 	void ChangeLogLevel(LOG_LEVEL logLevel);
 
@@ -37,4 +28,19 @@ public:
 
 private:
 	void FlushToFile(std::string& fileName, std::string& filePath, std::string& logMsg);
+
+private:
+	// typedef vs using
+	// https://unikys.tistory.com/381
+	using mapStrMutex = std::map<std::string, std::mutex*>;
+	mapStrMutex			m_Lock;
+	std::atomic<int>	m_LogLevel;
+	std::string			m_FileName;
+
+	// static member
+	// https://is03.tistory.com/18
+	static Log* instance;
+
+private:
+	Log();
 };

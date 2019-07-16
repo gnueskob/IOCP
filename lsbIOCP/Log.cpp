@@ -4,26 +4,36 @@
 #define MUTEX_PTR		second
 #define INSERT_SUCCESS	second
 
-Log::Log(LOG_LEVEL logLevel, std::string fileName, std::string type) : m_FileName(fileName), m_Type(type)
+Log* Log::instance = nullptr;
+
+Log* Log::GetInstance()
 {
+	if (instance == nullptr)
+	{
+		instance = new Log();
+	}
+	return instance;
+}
+
+Log::Log()
+{
+	m_FileName = utils::GetDate();
+	ChangeLogLevel(LOG_LEVEL::INFO);
+}
+
+void Log::Init(LOG_LEVEL logLevel, std::string fileName)
+{
+	m_FileName = fileName;
 	ChangeLogLevel(logLevel);
 
 	// map insert tip
 	// https://yonmy.com/archives/9
 	// performance of string key map
 	// http://veblush.blogspot.com/2012/10/map-vs-unorderedmap-for-string-key.html
-	auto res = m_Lock.insert({ fileName, nullptr });
+	auto res = Log::m_Lock.insert({ fileName, nullptr });
 	if (res.INSERT_SUCCESS)
 	{ 
-		res.MAP_ITER->MUTEX_PTR = new std::mutex(); 
-	}
-}
-
-Log::~Log()
-{
-	for (auto& [_, mutex_ptr] : m_Lock)
-	{
-		delete mutex_ptr;
+		res.MAP_ITER->MUTEX_PTR = new std::mutex();
 	}
 }
 
@@ -54,7 +64,7 @@ void Log::Write(std::string msg, LOG_LEVEL logLevel)
 	std::string date = utils::GetDate();
 
 	std::stringstream ss;
-	ss << "[" << date << "-" << time << "] " << m_Type << " -> " << msg;
+	ss << "[" << date << "-" << time << "] " << msg;
 	std::string logMsg = ss.str();
 
 	// TODO: split files if size exceeds threshold (not by date)
