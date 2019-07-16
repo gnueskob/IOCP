@@ -18,10 +18,10 @@ private:
 	// typedef vs using
 	// https://unikys.tistory.com/381
 	using mapStrMutex = std::map<std::string, std::mutex*>;
-	mapStrMutex			m_Lock;
-	std::atomic<int>	m_LogLevel;
-	std::string			m_FileName;
-	std::string			m_Type;
+	static mapStrMutex		m_Lock;
+	std::atomic<int>		m_LogLevel;
+	std::string				m_FileName;
+	std::string				m_Type;
 
 public:
 	Log() = delete;
