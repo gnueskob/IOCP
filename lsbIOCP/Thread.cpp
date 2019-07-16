@@ -1,7 +1,3 @@
-#include <windows.h>
-#include <process.h>
-#include <time.h>
-
 #include "Thread.h"
 
 void Thread::ValidateHandle()
@@ -15,7 +11,10 @@ Thread::Thread(std::thread* t) { m_Runner = t; }
 
 Thread::~Thread()
 {
-	Join();
+	if (m_Runner != nullptr)
+	{
+		Join();
+	}
 	Thread::ValidateHandle();
 }
 

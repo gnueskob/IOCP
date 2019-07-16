@@ -1,4 +1,5 @@
 #pragma once
+#include <windows.h>
 
 #include <thread>
 
@@ -17,12 +18,12 @@ public:
 	virtual	void	Sleep(long ms);
 	virtual	bool	WaitFor();
 
-private:
-	void ValidateHandle();
-
 protected:
 	std::thread*	m_Runner = nullptr;
 	HANDLE			m_Handle = INVALID_HANDLE_VALUE;
 	volatile bool	m_IsStarted = false;
+
+private:
+	void ValidateHandle();
 };
 
