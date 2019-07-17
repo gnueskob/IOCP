@@ -1,15 +1,6 @@
 ﻿#include "../lsbIOCP/Acceptor.h"
-
-class pt {
-public:
-	pt() { std::cout << "hi" << std::endl; }
-	~pt() { std::cout << "bye" << std::endl; }
-};
-
-class test {
-public:
-	std::map<int, std::shared_ptr<pt>> m;
-};
+#include "../lsbIOCP/AsyncIOServer.h"
+#include "lsbReceiver.h"
 
 int main()
 {
@@ -17,10 +8,18 @@ int main()
 	const unsigned short port = 11011;
 	std::string serverName = "simpleEchoServer";
 
-	auto fileName = utils::Format("Server_port-%d", port);
-	Log::GetInstance()->Init(LOG_LEVEL::DEBUG, fileName);
+	DWORD ioMaxBufferSize = 1024;
+	DWORD threadNumber = 2;
+	DWORD sessionNumber = 1000;
 
-	Acceptor server(ip, port);
+	// Make custom receiver
+	lsbReceiver receiver;
+
+	// Make your server with custom receiver
+	AsyncIOServer lsbServer(&receiver, ioMaxBufferSize, threadNumber, sessionNumber, serverName);
+
+	// Apply acceptor to your server
+	Acceptor server(&lsbServer, ip, port);
 
 	server.Start();
 

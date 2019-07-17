@@ -2,7 +2,7 @@
 
 bool Acceptor::m_ws2_32_lib = false;
 
-Acceptor::Acceptor(const char* ip, const u_short port) : m_ip(ip), m_port(port)
+Acceptor::Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port) : m_pServer(pServer), m_ip(ip), m_port(port)
 {
 	if (m_ws2_32_lib == false)
 	{
@@ -41,7 +41,7 @@ void Acceptor::Accept()
 
 	while (this->IsStart())
 	{
-		clientSocket = accept(m_listenSocket, (sockaddr*)& addr, &len);
+		clientSocket = accept(m_listenSocket, reinterpret_cast<LPSOCKADDR>(&addr), &len);
 
 		if (clientSocket == INVALID_SOCKET)
 		{
@@ -55,7 +55,7 @@ void Acceptor::Accept()
 			addr.sin_addr.S_un.S_un_b.s_b3,
 			addr.sin_addr.S_un.S_un_b.s_b4));
 
-		// m_Server->registerSokcet()
+		m_pServer->registerSocket(clientSocket);
 	}
 }
 

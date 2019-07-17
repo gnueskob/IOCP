@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Ws2tcpip.h>
-#include <windows.h>
 
 #include <thread>
 #include <string>
@@ -20,7 +19,7 @@ class Acceptor : public Thread
 {
 public:
 	Acceptor() = delete;
-	Acceptor(const char* ip, const u_short port);
+	Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port);
 	~Acceptor() = default;
 	void Run() override;
 
@@ -28,7 +27,7 @@ private:
 	void Accept();
 
 private:
-	AsyncIOServer*	m_Server;
+	AsyncIOServer*	m_pServer;
 	SOCKET			m_listenSocket;
 	const char*		m_ip;
 	const u_short	m_port;

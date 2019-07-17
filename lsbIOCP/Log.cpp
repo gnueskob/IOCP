@@ -104,6 +104,6 @@ void Log::FlushToFile(std::string& fileName, std::string& filePath, std::string&
 	}
 	else 
 	{ 
-		std::cout << logMsg; 
+		std::cout << logMsg << std::endl; 
 	}
 }
