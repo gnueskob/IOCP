@@ -6,12 +6,14 @@
 #include <mutex>
 #include <string>
 
+enum OP_TYPE { RECV, SEND, CONN };
+
 // Overlapped extended struct
 typedef struct _OVERLAPPED_EX
 {
 public:
-	_OVERLAPPED_EX() : maxLength(0) { Init(); }
-	_OVERLAPPED_EX(size_t maxLength) : maxLength(maxLength)
+	_OVERLAPPED_EX() : maxLength(0), type(OP_TYPE::RECV) { Init(); }
+	_OVERLAPPED_EX(size_t maxLength) : type(OP_TYPE::RECV), maxLength(maxLength)
 	{
 		Init();
 		if (0 < maxLength)
@@ -29,6 +31,7 @@ public:
 public:
 	OVERLAPPED		overlapped;
 	WSABUF			wsabuf;
+	OP_TYPE			type;
 	size_t			maxLength;			// Socket buffer max length
 	size_t			requesterID;		// [요청자가 건네는 구분값] for connectSocket()
 } OVERLAPPED_EX, *LPOVERLAPPED_EX;
