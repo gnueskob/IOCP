@@ -1,21 +1,12 @@
 #pragma once
 
-#include <windows.h>
-
-#include "Session.h"
-
-using sessionMap = std::unordered_map<ULONG_PTR, Session*>;
+#include "Struct.h"
 
 class IServerController {
 public:
-	virtual DWORD postRecv(Session* session) = 0;
 	virtual DWORD postSend() = 0;
 	virtual DWORD disconnectSocket() = 0;
 	virtual DWORD connectSocket() = 0;
-	virtual DWORD registerSokcet() = 0;
-
-	// Get session map information
-	virtual const sessionMap* GetSessionMap() const = 0;
 };
 
 class IServerReceiver {
