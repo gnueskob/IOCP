@@ -13,6 +13,7 @@ AsyncIOServer::AsyncIOServer(
 	, m_ThreadNum(threadNumber)
 	, m_ServerName(name)
 	, m_IOCPHandle(INVALID_HANDLE_VALUE)
+	, m_Log(Log::GetInstance())
 {
 	Log::GetInstance()->Init(LOG_LEVEL::DEBUG, name);
 
@@ -29,15 +30,13 @@ AsyncIOServer::AsyncIOServer(
 	m_IOCPHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, static_cast<ULONG_PTR>(0), threadNumber);
 
 	ThrowLastErrorIf(m_IOCPHandle == INVALID_HANDLE_VALUE, "Fail create IOCP");
-
-	m_Log = Log::GetInstance();
 	
+	m_pSessinManager = new SessionManager(sessionNumber, ioMaxSize, this);
+
 	for (DWORD i = 0; i < threadNumber; i++)
 	{
-		m_Workers.push_back(std::make_shared<Worker>());
+		m_Workers.push_back(std::make_shared<Worker>(pReceiver, m_IOCPHandle, m_pSessinManager));
 	}
-
-	m_pSessinManager = std::make_unique<SessionManager>(sessionNumber, ioMaxSize, this);
 
 	m_Log->Write("Server Initialized succesfully");
 };

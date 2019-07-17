@@ -2,6 +2,10 @@
 #include "../lsbIOCP/AsyncIOServer.h"
 #include "lsbReceiver.h"
 
+void test() {
+
+}
+
 int main()
 {
 	const char* ip = "127.0.0.1";
@@ -21,9 +25,9 @@ int main()
 	// Apply acceptor to your server
 	Acceptor server(&lsbServer, ip, port);
 
-	server.Start();
+	//server.Start();
 
-	server.Join();
+	//server.Join();
 
 	return 0;
 }

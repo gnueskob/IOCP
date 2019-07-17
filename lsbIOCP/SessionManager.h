@@ -16,6 +16,8 @@ public:
 	bool retrieveId(size_t& _out_sessionId);
 	void returnId(size_t sessionId);
 
+	// TODO: session info getter
+
 public:
 	static size_t	SESSION_MAX_NUMBER;
 

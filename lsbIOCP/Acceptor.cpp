@@ -2,7 +2,8 @@
 
 bool Acceptor::m_ws2_32_lib = false;
 
-Acceptor::Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port) : m_pServer(pServer), m_ip(ip), m_port(port)
+Acceptor::Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port) 
+	: m_pServer(pServer), m_ip(ip), m_port(port), m_Log(Log::GetInstance())
 {
 	if (m_ws2_32_lib == false)
 	{
@@ -27,8 +28,6 @@ Acceptor::Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port) :
 
 	res = listen(m_listenSocket, 128);
 	ThrowLastErrorIf(res == SOCKET_ERROR, "[listen()] Fail listen");
-
-	m_Log = Log::GetInstance();
 	
 	m_Log->Write(utils::Format("[%s, %d] accept started\n", ip, port));
 }

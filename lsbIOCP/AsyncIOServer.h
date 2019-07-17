@@ -33,14 +33,14 @@ private:
 
 	HANDLE			m_IOCPHandle;
 
-	size_t			m_IOMaxSize;
 	static size_t	IO_MIN_SIZE;
+	size_t			m_IOMaxSize;
 
-	size_t		m_ThreadNum;
-	workers		m_Workers;
+	size_t			m_ThreadNum;
+	workers			m_Workers;
 
-	std::string m_ServerName;
-	Log*		m_Log;
+	std::string		m_ServerName;
+	Log*			m_Log;
 
-	std::unique_ptr<SessionManager>		m_pSessinManager;
+	SessionManager*		m_pSessinManager;
 };
