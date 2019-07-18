@@ -35,7 +35,7 @@ AsyncIOServer::AsyncIOServer(
 
 	for (DWORD i = 0; i < threadNumber; i++)
 	{
-		m_Workers.push_back(std::make_shared<Worker>(pReceiver, m_IOCPHandle, m_pSessinManager));
+		m_Workers.push_back(std::make_shared<Worker>(pReceiver, m_IOCPHandle, m_pSessinManager, this));
 	}
 
 	m_Log->Write("Server Initialized succesfully");
@@ -65,14 +65,24 @@ void AsyncIOServer::Stop()
 	}
 }
 
-void AsyncIOServer::registerSocket(SOCKET clientSocket)
+void AsyncIOServer::RegisterSession(SOCKET clientSocket)
 {
+	// TODO: implement
+
 	ThrowErrorIf(INVALID_SOCKET == clientSocket, WSAENOTSOCK, "Client socket is invalid");
 	
 	return;
 }
 
-void AsyncIOServer::postRecv(SESSION* session)
+void AsyncIOServer::ReleaseSession(size_t sessionId, DWORD error)
 {
+	if (error != 0);
+	// TODO: implement
+	m_Log->Write(utils::Format("[%ull session] Release Sokcet", sessionId));
+}
+
+void AsyncIOServer::PostRecv(SESSION* session)
+{
+	// TODO: implement
 	session->enterIO();
 }

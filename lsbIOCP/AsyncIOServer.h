@@ -20,13 +20,14 @@ public:
 	void Start();
 	void Stop();
 
-	void registerSocket(SOCKET clientSocket);
-	void postRecv(SESSION* session);
+	void RegisterSession(SOCKET clientSocket);
+	void ReleaseSession(size_t sessionId, DWORD error);
+	void PostRecv(SESSION* session);
 
 	// IServerController
-	DWORD postSend() override;
-	DWORD disconnectSocket() override;
-	DWORD connectSocket() override;
+	DWORD PostSend() override;
+	DWORD DisconnectSocket() override;
+	DWORD ConnectSocket() override;
 
 private:
 	IServerReceiver*	m_pReceiver;

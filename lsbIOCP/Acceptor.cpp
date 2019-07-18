@@ -54,7 +54,7 @@ void Acceptor::Accept()
 			addr.sin_addr.S_un.S_un_b.s_b3,
 			addr.sin_addr.S_un.S_un_b.s_b4));
 
-		m_pServer->registerSocket(clientSocket);
+		m_pServer->RegisterSession(clientSocket);
 	}
 }
 
