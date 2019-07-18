@@ -83,8 +83,7 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 	switch (overlappedEx->type)
 	{
 	case OP_TYPE::CONN:
-		auto error = setsockopt(session->GetSocket(), SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT, NULL, 0);
-		if (error != NULL)
+		if (setsockopt(session->GetSocket(), SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT, NULL, 0) != NULL)
 		{ 
 			auto lastError = ::GetLastError();
 			m_pReceiver->NotifyServerConnectingResult(sessionDesc, reqId, lastError);
@@ -116,6 +115,9 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 		// TODO: logging critical error
 		break;
 	}
+
+	// atmoic 하게 두 데이터를 수정하려면,
+	// https://stackoverflow.com/questions/38984153/how-can-i-implement-aba-counter-with-c11-cas
 
 	// 만약 열린 상태에서 다음 코드로 진입 후
 	// 다른 스레드에서 소켓을 닫아버린다면??
