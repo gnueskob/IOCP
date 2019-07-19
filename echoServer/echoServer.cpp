@@ -8,7 +8,7 @@ void test() {
 int main()
 {
 	const char* ip = "127.0.0.1";
-	const unsigned short port = 11011;
+	const unsigned short port = 23452;
 	std::string serverName = "simpleEchoServer";
 
 	DWORD ioMaxBufferSize = 1024;
