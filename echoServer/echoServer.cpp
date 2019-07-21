@@ -1,9 +1,7 @@
 ﻿#include "../lsbIOCP/Acceptor.h"
 #include "../lsbIOCP/AsyncIOServer.h"
 #include "lsbReceiver.h"
-
-void test() {
-}
+#include "../lsbIOCP/PacketBufferManager.h"
 
 int main()
 {
