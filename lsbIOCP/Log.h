@@ -9,6 +9,7 @@
 
 #include "Utils.h"
 
+// TODO: redesign log level
 enum LOG_LEVEL { DISABLE, INFO, WARN, ERR, TRACE, DEBUG };
 
 class Log
