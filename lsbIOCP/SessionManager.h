@@ -24,9 +24,6 @@ public:
 	DWORD PostRecv(SESSION* session);
 	DWORD PostSend(SESSION* session, size_t length, char* data);
 
-public:
-	static INT	SESSION_MAX_NUMBER;
-
 private:
 	using cqueue = Concurrency::concurrent_queue<INT>;
 	INT				m_IOBufMaxSize;

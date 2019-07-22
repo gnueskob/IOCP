@@ -13,14 +13,15 @@ int main()
 	const INT sessionNumber = 1000;
 
 	// config
-	const INT sessionMaxNum = 3000;
-	const INT ioMaxBufferSize = 1024;
+	const INT SESSION_MAX_NUM = 3000;
+	const INT IO_MAX_BUFFER_SIZE = 1024;
+	const INT IO_MIN_SIZE = 1024;
 
 	// Make custom receiver
 	lsbReceiver receiver;
 
 	// Make your server with custom receiver
-	AsyncIOServer lsbServer(&receiver, ioMaxBufferSize, threadNumber, sessionNumber, sessionMaxNum, serverName, ip, port);
+	AsyncIOServer lsbServer(&receiver, IO_MAX_BUFFER_SIZE, IO_MIN_SIZE, threadNumber, sessionNumber, SESSION_MAX_NUM, serverName, ip, port);
 	lsbServer.Start();
 	lsbServer.Join();
 

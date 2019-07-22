@@ -21,6 +21,7 @@ public:
 	AsyncIOServer(
 		IServerReceiver* const pReceiver,
 		const INT ioMaxSize,
+		const INT ioMinSize,
 		const INT threadNumber,
 		const INT sessionNumber,
 		const INT sessionMaxNum,
@@ -47,10 +48,7 @@ private:
 
 	HANDLE			m_IOCPHandle;
 
-	static size_t	IO_MIN_SIZE;
-	size_t			m_IOMaxSize;
-
-	size_t			m_ThreadNum;
+	INT				m_ThreadNum;
 	workers			m_Workers;
 
 	std::string		m_ServerName;

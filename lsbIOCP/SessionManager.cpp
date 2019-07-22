@@ -1,7 +1,5 @@
 #include "SessionManager.h"
 
-INT SessionManager::SESSION_MAX_NUMBER = 3000;
-
 // Constructor of SessionManager
 // Create session object pool ( [sessionNum] sessions )
 // Set unique id of each session and push id to concurrent_queue (session id queue)

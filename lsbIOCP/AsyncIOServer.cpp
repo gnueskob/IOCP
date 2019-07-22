@@ -1,10 +1,9 @@
 #include "AsyncIOServer.h"
 
-size_t AsyncIOServer::IO_MIN_SIZE = 1024;
-
 AsyncIOServer::AsyncIOServer(
 	IServerReceiver* const pReceiver,
 	const INT ioMaxSize,
+	const INT ioMinSize,
 	const INT threadNumber,
 	const INT sessionNumber,
 	const INT sessionMaxNum,
@@ -12,7 +11,6 @@ AsyncIOServer::AsyncIOServer(
 	const char* const ip,
 	const u_short port)
 	: m_pReceiver(pReceiver)
-	, m_IOMaxSize(ioMaxSize)
 	, m_ThreadNum(threadNumber)
 	, m_ServerName(name)
 	, m_IOCPHandle(INVALID_HANDLE_VALUE)
@@ -26,11 +24,14 @@ AsyncIOServer::AsyncIOServer(
 	// Initialize Log file name, level
 	Log::GetInstance()->Init(LOG_LEVEL::DEBUG, m_ServerName);
 
+	// Config conditions
+	ThrowErrorIf(ioMaxSize <= 0 || ioMinSize <= 0 || sessionMaxNum <= 0, 0UL, "configuration value is invalid");
+
 	// Check conditions
 	ThrowErrorIf(pReceiver == nullptr, WSAEINVAL, "Receiver nullptr");
 	ThrowErrorIf(threadNumber < 1, WSAEINVAL, "Thread number must over than 0");
-	ThrowErrorIf(IO_MIN_SIZE > ioMaxSize, WSAEMSGSIZE, "ioMaxSize is too small than IO_MIN_SIZE");
-	ThrowErrorIf(SessionManager::SESSION_MAX_NUMBER < sessionNumber, WSAENOBUFS, "Session number exceeds max value");
+	ThrowErrorIf(ioMinSize > ioMaxSize, WSAEMSGSIZE, "ioMaxSize is too small than IO_MIN_SIZE");
+	ThrowErrorIf(sessionMaxNum < sessionNumber, WSAENOBUFS, "Session number exceeds max value");
 
 	// Create IOCP
 	m_IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, static_cast<ULONG_PTR>(0), threadNumber);
