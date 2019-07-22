@@ -1,4 +1,5 @@
 #include "Acceptor.h"
+#include "AsyncIOServer.h"
 
 bool Acceptor::m_winsock_dll = false;
 

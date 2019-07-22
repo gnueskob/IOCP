@@ -5,7 +5,7 @@ DWORD AsyncIOServer::SendPacket(SESSIONDESC& sessionDesc, size_t length, char* d
 {
 	m_Log->Write("Server request: send packet", LOG_LEVEL::DEBUG);
 	auto session = m_pSessionManager->GetSessionPtr(sessionDesc.id);
-	PostSend(session, length, data);
+	m_pSessionManager->PostSend(session, length, data);
 	return 0;
 }
 

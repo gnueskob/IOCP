@@ -9,6 +9,7 @@
 #include "Utils.h"
 #include "Worker.h"
 #include "SessionManager.h"
+#include "Acceptor.h"
 #include "AsyncIOException.h"
 
 using workers = std::vector<std::shared_ptr<Worker>>;
@@ -17,7 +18,15 @@ class AsyncIOServer : public IServerController
 {
 public:
 	AsyncIOServer() = delete;
-	AsyncIOServer(IServerReceiver* pReceiver, DWORD ioMaxSize, DWORD threadNumber, DWORD sessionNumber,  std::string name);
+	AsyncIOServer(
+		IServerReceiver* const pReceiver,
+		const INT ioMaxSize,
+		const INT threadNumber,
+		const INT sessionNumber,
+		const INT sessionMaxNum,
+		const std::string name,
+		const char* const ip,
+		const u_short port);
 	~AsyncIOServer();
 	void Start();
 	void Stop();
@@ -27,16 +36,14 @@ public:
 	DWORD UnlinkSocketToSession(INT sessionId, DWORD error);
 	DWORD RegisterClient(SOCKET clientSocket);
 
-	DWORD PostRecv(SESSION* session);
-	DWORD PostSend(SESSION* session, size_t length, char* data);
-
 	// IServerController
 	DWORD SendPacket(SESSIONDESC& sessionDesc, size_t length, char* data) override;
 	DWORD ConnectSocket(INT requestId, const char* ip, u_short port) override;
 	DWORD DisconnectSocket(SESSIONDESC& sessionDesc) override;
 
 private:
-	IServerReceiver*	m_pReceiver;
+	IServerReceiver*		m_pReceiver;
+	Acceptor*		m_pAcceptor;
 
 	HANDLE			m_IOCPHandle;
 

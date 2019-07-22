@@ -25,8 +25,10 @@ public:
 
 	bool Init(int size, int headerSize, int maxPacketSize)
 	{
-		if (size < (maxPacketSize * 2) || size < 1 || headerSize < 1 || maxPacketSize < 1)
+		if (size < (maxPacketSize * 2) || headerSize < 1 || maxPacketSize < 1)
+		{
 			return false;
+		}
 
 		m_ReadPos = 0;
 		m_WritePos = 0;
@@ -40,14 +42,20 @@ public:
 
 	// Write n-bytes to packet buffer
 	// and increase write pointer in packet buffer to write data at that time
-	bool Write(char* data, int startIndex, int size)
+	bool Write(char* pData, int startIndex, int size)
 	{
-		if (data == nullptr) return false;
+		if (pData == nullptr)
+		{
+			return false;
+		}
 
 		int remainBufferSize = m_BufferSize - m_WritePos;
-		if (remainBufferSize < size) return false;
+		if (remainBufferSize < size)
+		{
+			return false;
+		}
 
-		CopyMemory(m_pPacketData + m_WritePos, data + startIndex, size);
+		CopyMemory(m_pPacketData + m_WritePos, pData + startIndex, size);
 		m_WritePos += size;
 
 		PreventBufferOverflow();
@@ -56,19 +64,24 @@ public:
 	// Read n-bytes to destination.
 	// Before copy data to dest, dest array size will be checked 
 	// whether it's size is bigger than packet size being read
-	bool Read(char* dest, int destMaxSize)
+	bool Read(char* pDest, int destMaxSize)
 	{
 		int readableSize = m_WritePos - m_ReadPos;
 
-		if (readableSize < m_HeaderSize) return false;
+		if (readableSize < m_HeaderSize)
+		{
+			return false;
+		}
 
 		// Get the size of entire meaningful packet
 		// by calling custom function that server provide
 		int packetSize = GetPacketSize(m_pPacketData + m_ReadPos);
-		if (readableSize < packetSize) return false;
-		if (destMaxSize < packetSize) return false;
+		if (readableSize < packetSize || destMaxSize < packetSize)
+		{
+			return false;
+		}
 
-		CopyMemory(dest, m_pPacketData + m_ReadPos, packetSize);
+		CopyMemory(pDest, m_pPacketData + m_ReadPos, packetSize);
 		m_ReadPos += packetSize;
 		return true;
 	}
@@ -116,13 +129,13 @@ int GetPakcetSize(char* packet)
 
 // Bit converter
 template<typename T>
-T* BytesToType(char* bytes, int index = 0)
+T* BytesToType(const char* const pBytes, const int index = 0)
 {
-	return reinterpret_cast<T*>(bytes + index);
+	return reinterpret_cast<T*>(pBytes + index);
 }
 
 template<typename T>
-char* TypeToBytes(T* data)
+char* TypeToBytes(const T* const pData)
 {
-	return reinterpret_cast<char*>(data);
+	return reinterpret_cast<char*>(pData);
 }

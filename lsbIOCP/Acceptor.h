@@ -8,12 +8,13 @@
 
 #include "Log.h"
 #include "Thread.h"
-#include "AsyncIOServer.h"
 #include "AsyncIOException.h"
 
 // ws2_32.lib
 // https://m.blog.naver.com/PostView.nhn?blogId=gimjoonbum&logNo=220065601788&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 #pragma comment(lib, "ws2_32.lib")
+
+class AsyncIOServer;
 
 class Acceptor : public Thread
 {

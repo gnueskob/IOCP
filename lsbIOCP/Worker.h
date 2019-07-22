@@ -18,7 +18,7 @@ class Worker : public Thread
 {
 public:
 	Worker() = delete;
-	Worker(IServerReceiver* pReceiver, HANDLE iocpHandle, SessionManager* sessionManager, AsyncIOServer* pServer);
+	Worker(IServerReceiver* const pReceiver, const HANDLE iocpHandle, SessionManager* const pSessionManager, AsyncIOServer* const pServer);
 	void Run() override;
 
 private:
@@ -27,9 +27,9 @@ private:
 	void DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOverlapped, INT id);
 
 private:
-	IServerReceiver*	m_pReceiver;
-	SessionManager*		m_pSessionManager;
-	AsyncIOServer*		m_pServer;
+	IServerReceiver* const		m_pReceiver;
+	SessionManager* const		m_pSessionManager;
+	AsyncIOServer* const	 	m_pServer;
 	HANDLE				m_IOCPHandle;
 	Log*				m_Log;
 };

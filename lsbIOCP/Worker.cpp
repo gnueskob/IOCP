@@ -2,7 +2,11 @@
 
 #include "AsyncIOServer.h"
 
-Worker::Worker(IServerReceiver* pReceiver, HANDLE iocpHandle, SessionManager* pSessionManager, AsyncIOServer* pServer)
+Worker::Worker(
+	IServerReceiver* const pReceiver,
+	const HANDLE iocpHandle,
+	SessionManager* const pSessionManager,
+	AsyncIOServer* const pServer)
 	: m_pReceiver(pReceiver)
 	, m_IOCPHandle(iocpHandle)
 	, m_pSessionManager(pSessionManager)
@@ -25,7 +29,7 @@ void Worker::HandleCompletion()
 			completionPortEntries,
 			maxRemoveCount,
 			&removedNumber,
-			INFINITY,
+			INFINITE,
 			alertable);
 
 		// Process completed job
@@ -109,7 +113,7 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 		{
 			// If job goes smoothly, post WSARecv
 			m_pReceiver->NotifyServerConnectingResult(sessionDesc, overlappedEx->requesterId, NULL);
-			auto error = m_pServer->PostRecv(session);
+			auto error = m_pSessionManager->PostRecv(session);
 			if (error != FALSE)
 			{
 				m_Log->Write(utils::Format("[Error %u] PostRecv failed", error), LOG_LEVEL::ERR);
@@ -133,7 +137,7 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 			m_pReceiver->NotifyMessage(sessionDesc, transferredBytesNumber, overlappedEx->wsabuf.buf);
 
 			// And post WSARecv again
-			m_pServer->PostRecv(session);
+			m_pSessionManager->PostRecv(session);
 		}
 		break;
 
