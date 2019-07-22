@@ -75,10 +75,10 @@ void Log::Write(std::string msg, LOG_LEVEL logLevel)
 	ss << "./Log/" << m_FileName << "_" << date << ".txt";
 	std::string filePath = ss.str();
 
-	Log::FlushToFile(m_FileName, filePath, logMsg);
+	Log::FlushToFile(filePath, logMsg);
 }
 
-void Log::FlushToFile(std::string& fileName, std::string& filePath, std::string& logMsg)
+void Log::FlushToFile(std::string& filePath, std::string& logMsg)
 {
 	// TODO: remove file lock, add fileopen, msg write lock
 	// Manage mutex variables to map by file name (except for date in file name)

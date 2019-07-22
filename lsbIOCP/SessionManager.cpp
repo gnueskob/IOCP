@@ -1,11 +1,11 @@
 #include "SessionManager.h"
 
-size_t SessionManager::SESSION_MAX_NUMBER = 3000;
+INT SessionManager::SESSION_MAX_NUMBER = 3000;
 
 // Constructor of SessionManager
 // Create session object pool ( [sessionNum] sessions )
 // Set unique id of each session and push id to concurrent_queue (session id queue)
-SessionManager::SessionManager(size_t sessionNum, size_t ioBufMaxSize, IServerController* pController) : m_SessionNumber(sessionNum)
+SessionManager::SessionManager(INT sessionNum, INT ioBufMaxSize, IServerController* pController) : m_SessionNumber(sessionNum)
 {
 	m_ConnectedSessionNumber.store(0);
 	INT sessionId = 0;
@@ -43,7 +43,7 @@ SESSIONDESC& SessionManager::GetSessionDescRef(INT sessionId)
 // SESSION has atomic member values, so they can not use &(ref) constructor
 // https://stackoverflow.com/questions/14182258/c11-write-move-constructor-with-atomicbool-member
 // Get session of session id
-LPSESSION SessionManager::GetSessionPtr(INT sessionId)
+SESSION* SessionManager::GetSessionPtr(INT sessionId)
 {
 	return m_SessionPool.at(sessionId);
 }

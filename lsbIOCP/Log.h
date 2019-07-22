@@ -26,7 +26,7 @@ public:
 	void Write(std::string msg, LOG_LEVEL logLevel);
 
 private:
-	void FlushToFile(std::string& fileName, std::string& filePath, std::string& logMsg);
+	void FlushToFile(std::string& filePath, std::string& logMsg);
 
 private:
 	// typedef vs using

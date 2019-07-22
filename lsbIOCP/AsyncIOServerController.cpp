@@ -18,11 +18,11 @@ DWORD AsyncIOServer::DisconnectSocket(SESSIONDESC& sessionDesc)
 }
 
 // Server request connecting another server
-DWORD AsyncIOServer::ConnectSocket(size_t requestId, const char* ip, u_short port)
+DWORD AsyncIOServer::ConnectSocket(INT requestId, const char* ip, u_short port)
 {
 	m_Log->Write("Server request: ConnectSocket", LOG_LEVEL::DEBUG);
 
-	auto sockAddrLen = sizeof(SOCKADDR_IN);
+	auto sockAddrLen = static_cast<int>(sizeof(SOCKADDR_IN));
 
 	SOCKADDR_IN sockAddr;
 	ZeroMemory(&sockAddr, sockAddrLen);

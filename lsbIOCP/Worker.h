@@ -3,7 +3,7 @@
 #include <winsock2.h>
 #include <MSWSock.h>
 
-#include "Struct.h"
+#include "Session.h"
 #include "IServer.h"
 #include "SessionManager.h"
 #include "Log.h"
@@ -23,8 +23,8 @@ public:
 
 private:
 	void HandleCompletion();
-	void DispatchError(DWORD error, DWORD transferredBytesNumber, LPOVERLAPPED lpOverlapped, ULONG_PTR id);
-	void DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOverlapped, ULONG_PTR id);
+	void DispatchError(DWORD error, LPOVERLAPPED lpOverlapped, INT id);
+	void DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOverlapped, INT id);
 
 private:
 	IServerReceiver*	m_pReceiver;

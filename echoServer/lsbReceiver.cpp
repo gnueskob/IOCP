@@ -5,7 +5,7 @@ void lsbReceiver::NotifyClientConnected(SESSIONDESC& sessionDesc) const
 	printf("Connected %d\n", sessionDesc.id);
 }
 
-void lsbReceiver::NotifyClientDisconnected(short sessionId) const
+void lsbReceiver::NotifyClientDisconnected(INT sessionId) const
 {
 	printf("Disconnected %d\n", sessionId);
 }

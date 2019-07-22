@@ -11,7 +11,7 @@ class lsbReceiver : public IServerReceiver
 	void NotifyClientConnected(SESSIONDESC& sessionDesc) const override;
 
 	// Triggered when socket is disconnected
-	void NotifyClientDisconnected(short sessionId) const override;
+	void NotifyClientDisconnected(INT sessionId) const override;
 
 	// Triggered when server get message from client
 	void NotifyMessage(SESSIONDESC& sessionDesc, size_t bytesNumber, char* data) const override;

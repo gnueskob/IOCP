@@ -23,7 +23,7 @@ public:
 	void Stop();
 	void Join();
 
-	LPSESSION LinkSocketToSession(SOCKET clientSocket);
+	SESSION* LinkSocketToSession(SOCKET clientSocket);
 	DWORD UnlinkSocketToSession(INT sessionId, DWORD error);
 	DWORD RegisterClient(SOCKET clientSocket);
 
@@ -32,7 +32,7 @@ public:
 
 	// IServerController
 	DWORD SendPacket(SESSIONDESC& sessionDesc, size_t length, char* data) override;
-	DWORD ConnectSocket(size_t requestId, const char* ip, u_short port) override;
+	DWORD ConnectSocket(INT requestId, const char* ip, u_short port) override;
 	DWORD DisconnectSocket(SESSIONDESC& sessionDesc) override;
 
 private:

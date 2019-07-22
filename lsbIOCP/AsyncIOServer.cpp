@@ -83,7 +83,7 @@ void AsyncIOServer::Join()
 
 // Apply socket id to available session
 // Warning : not yet opend socket flag
-LPSESSION AsyncIOServer::LinkSocketToSession(SOCKET clientSocket)
+SESSION* AsyncIOServer::LinkSocketToSession(SOCKET clientSocket)
 {
 	// Get available session id from 'session id pool' (concurrent queue)
 	INT sessionId;

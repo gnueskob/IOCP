@@ -12,8 +12,6 @@ Worker::Worker(IServerReceiver* pReceiver, HANDLE iocpHandle, SessionManager* pS
 // Handle all of completed IOCP queue jobs from GQCSEX
 void Worker::HandleCompletion()
 {
-	// To consider thead stop, set wait time not INFINITY
-	constexpr DWORD		waitTime = 500;
 	constexpr ULONG		maxRemoveCount = 2;
 	constexpr BOOL		alertable = FALSE;
 	ULONG	removedNumber;
@@ -27,7 +25,7 @@ void Worker::HandleCompletion()
 			completionPortEntries,
 			maxRemoveCount,
 			&removedNumber,
-			waitTime,
+			INFINITY,
 			alertable);
 
 		// Process completed job
@@ -35,11 +33,11 @@ void Worker::HandleCompletion()
 		{
 			auto nBytes = completionPortEntries[i].dwNumberOfBytesTransferred;
 			auto lpOverlapped = completionPortEntries[i].lpOverlapped;
-			auto sessionId = completionPortEntries[i].lpCompletionKey;
+			auto sessionId = static_cast<INT>(completionPortEntries[i].lpCompletionKey);
 
 			if (res == FALSE)
 			{
-				DispatchError(::GetLastError(), nBytes, lpOverlapped, sessionId);
+				DispatchError(::GetLastError(), lpOverlapped, sessionId);
 			}
 			else
 			{
@@ -50,13 +48,13 @@ void Worker::HandleCompletion()
 }
 
 // Process IO job having error
-void Worker::DispatchError(DWORD error, DWORD transferredBytesNumber, LPOVERLAPPED lpOverlapped, ULONG_PTR id)
+void Worker::DispatchError(DWORD error, LPOVERLAPPED lpOverlapped, INT id)
 {
 	if (error == WAIT_TIMEOUT) return;
 
 	m_Log->Write(utils::Format("[Error %u] Dispatch Error", error), LOG_LEVEL::DEBUG);
 
-	auto overlappedEx = reinterpret_cast<LPOVERLAPPED_EX>(lpOverlapped);
+	auto overlappedEx = reinterpret_cast<OVERLAPPED_EX*>(lpOverlapped);
 	if (overlappedEx == nullptr)
 	{
 		m_Log->Write(utils::Format("[Error %u] overlapped is null", error), LOG_LEVEL::ERR);
@@ -80,9 +78,9 @@ void Worker::DispatchError(DWORD error, DWORD transferredBytesNumber, LPOVERLAPP
 }
 
 // Process completed IO job
-void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOverlapped, ULONG_PTR sessionId)
+void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOverlapped, INT sessionId)
 {
-	auto overlappedEx = reinterpret_cast<LPOVERLAPPED_EX>(lpOverlapped);
+	auto overlappedEx = reinterpret_cast<OVERLAPPED_EX*>(lpOverlapped);
 	auto session = m_pSessionManager->GetSessionPtr(sessionId);
 
 	// already socket disconnected

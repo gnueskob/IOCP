@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Struct.h"
+#include "Session.h"
 
 class IServerController {
 public:
 	virtual DWORD SendPacket(SESSIONDESC& sessionDesc, size_t length, char* data) = 0;
-	virtual DWORD ConnectSocket(size_t requestId, const char* ip, u_short port) = 0;
+	virtual DWORD ConnectSocket(INT requestId, const char* ip, u_short port) = 0;
 	virtual DWORD DisconnectSocket(SESSIONDESC& sessionDesc) = 0;
 };
 
@@ -17,7 +17,7 @@ public:
 	virtual void NotifyClientConnected(SESSIONDESC& sessionDesc) const = 0;
 
 	// 클라이언트 소켓 연결해제 통보
-	virtual void NotifyClientDisconnected(short sessionId) const = 0;
+	virtual void NotifyClientDisconnected(INT sessionId) const = 0;
 
 	// 메시지 수신 통보
 	virtual void NotifyMessage(SESSIONDESC& sessionDesc, size_t bytesNumber, char* data) const = 0;
