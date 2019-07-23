@@ -15,8 +15,6 @@
 // You must not remove this notice, or any other, from this software.
 // ----------------------------------------------------------------------------------------------
 
-#pragma once
-
 #include <windows.h>
 
 #include <iostream>

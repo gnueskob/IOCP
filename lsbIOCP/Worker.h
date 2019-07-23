@@ -3,10 +3,10 @@
 #include <winsock2.h>
 #include <MSWSock.h>
 
+#include "Log.h"
 #include "Session.h"
 #include "IServer.h"
 #include "SessionManager.h"
-#include "Log.h"
 #include "Utils.h"
 #include "Thread.h"
 
@@ -18,7 +18,12 @@ class Worker : public Thread
 {
 public:
 	Worker() = delete;
-	Worker(IServerReceiver* const pReceiver, const HANDLE iocpHandle, SessionManager* const pSessionManager, AsyncIOServer* const pServer);
+	Worker(
+		IServerReceiver* const pReceiver, 
+		const HANDLE iocpHandle, 
+		SessionManager* const pSessionManager, 
+		AsyncIOServer* const pServer, 
+		Log* const pLog);
 	void Run() override;
 
 private:

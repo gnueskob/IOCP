@@ -13,7 +13,12 @@ class SessionManager
 {
 public:
 	SessionManager() = delete;
-	SessionManager(INT sessionNum, INT sessionMaxNum, INT ioMaxBufSize, IServerController* pController);
+	SessionManager(
+		const INT sessionNum, 
+		const INT sessionMaxNum, 
+		const INT ioMaxBufSize, 
+		IServerController* const pController, 
+		Log* const pLog);
 
 	bool retrieveId(INT& _out_sessionId);
 	void returnId(INT sessionId);
@@ -32,4 +37,6 @@ private:
 	cqueue			m_SessionIdPool;
 	std::vector<SESSION*>	m_SessionPool;
 	std::atomic_int			m_ConnectedSessionNumber;
+
+	Log* m_Log;
 };

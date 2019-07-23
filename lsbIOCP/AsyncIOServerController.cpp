@@ -3,7 +3,7 @@
 // Server request sending some packet data to client
 DWORD AsyncIOServer::SendPacket(SESSIONDESC& sessionDesc, size_t length, char* data)
 {
-	m_Log->Write("Server request: send packet", LOG_LEVEL::DEBUG);
+	m_Log->Write(LV::DEBUG, "Server request: send packet");
 	auto session = m_pSessionManager->GetSessionPtr(sessionDesc.id);
 	m_pSessionManager->PostSend(session, length, data);
 	return 0;
@@ -12,7 +12,7 @@ DWORD AsyncIOServer::SendPacket(SESSIONDESC& sessionDesc, size_t length, char* d
 // Server request disconnecting current client
 DWORD AsyncIOServer::DisconnectSocket(SESSIONDESC& sessionDesc)
 {
-	m_Log->Write("Server request: disconnect", LOG_LEVEL::DEBUG);
+	m_Log->Write(LV::DEBUG, "Server request: disconnect");
 	UnlinkSocketToSession(sessionDesc.id, 0);
 	return 0;
 }
@@ -20,7 +20,7 @@ DWORD AsyncIOServer::DisconnectSocket(SESSIONDESC& sessionDesc)
 // Server request connecting another server
 DWORD AsyncIOServer::ConnectSocket(INT requestId, const char* ip, u_short port)
 {
-	m_Log->Write("Server request: ConnectSocket", LOG_LEVEL::DEBUG);
+	m_Log->Write(LV::DEBUG, "Server request: ConnectSocket");
 
 	auto sockAddrLen = static_cast<int>(sizeof(SOCKADDR_IN));
 

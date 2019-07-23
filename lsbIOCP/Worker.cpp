@@ -6,12 +6,13 @@ Worker::Worker(
 	IServerReceiver* const pReceiver,
 	const HANDLE iocpHandle,
 	SessionManager* const pSessionManager,
-	AsyncIOServer* const pServer)
+	AsyncIOServer* const pServer,
+	Log* const pLog)
 	: m_pReceiver(pReceiver)
 	, m_IOCPHandle(iocpHandle)
 	, m_pSessionManager(pSessionManager)
 	, m_pServer(pServer)
-	, m_Log(Log::GetInstance()) {}
+	, m_Log(pLog) {}
 
 // Handle all of completed IOCP queue jobs from GQCSEX
 void Worker::HandleCompletion()
@@ -56,12 +57,12 @@ void Worker::DispatchError(DWORD error, LPOVERLAPPED lpOverlapped, INT id)
 {
 	if (error == WAIT_TIMEOUT) return;
 
-	m_Log->Write(utils::Format("[Error %u] Dispatch Error", error), LOG_LEVEL::DEBUG);
+	m_Log->Write(LV::ERR, "#%u Dispatch Error", error);
 
 	auto overlappedEx = reinterpret_cast<OVERLAPPED_EX*>(lpOverlapped);
 	if (overlappedEx == nullptr)
 	{
-		m_Log->Write(utils::Format("[Error %u] overlapped is null", error), LOG_LEVEL::ERR);
+		m_Log->Write(LV::ERR, "#%u overlapped is null", error);
 		return;
 	}
 
@@ -74,7 +75,7 @@ void Worker::DispatchError(DWORD error, LPOVERLAPPED lpOverlapped, INT id)
 		auto reqId = overlappedEx->requesterId;
 		auto sessionDesc = m_pSessionManager->GetSessionDescRef(id);
 		m_pReceiver->NotifyServerConnectingResult(sessionDesc, reqId, error);
-		m_Log->Write("Can not connect to server", LOG_LEVEL::ERR);
+		m_Log->Write(LV::ERR, "Can not connect to server");
 	}
 
 	// This connection has problem, so disconnect
@@ -90,7 +91,7 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 	// already socket disconnected
 	if (session->IsOpened() == false)
 	{
-		m_Log->Write("Already disconnected connection", LOG_LEVEL::DEBUG);
+		m_Log->Write(LV::ERR, "Already disconnected connection");
 		return;
 	}
 
@@ -116,7 +117,7 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 			auto error = m_pSessionManager->PostRecv(session);
 			if (error != FALSE)
 			{
-				m_Log->Write(utils::Format("[Error %u] PostRecv failed", error), LOG_LEVEL::ERR);
+				m_Log->Write(LV::ERR, "#%u PostRecv failed", error);
 				m_pServer->UnlinkSocketToSession(sessionId, error);
 				return;
 			}
@@ -146,7 +147,7 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 		break;
 
 	default:
-		m_Log->Write("Overlapped has no type", LOG_LEVEL::ERR);
+		m_Log->Write(LV::ERR, "Overlapped has no type");
 		break;
 	}
 
@@ -175,5 +176,5 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 void Worker::Run()
 {
 	Worker::HandleCompletion();
-	m_Log->Write(utils::Format("[%d] thread stoped handling completion job", ::GetCurrentThreadId()));
+	m_Log->Write(LV::INFO, "[%d] thread stoped handling completion job", ::GetCurrentThreadId());
 }

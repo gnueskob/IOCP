@@ -3,10 +3,16 @@
 // Constructor of SessionManager
 // Create session object pool ( [sessionNum] sessions )
 // Set unique id of each session and push id to concurrent_queue (session id queue)
-SessionManager::SessionManager(INT sessionNum, INT sessionMaxNum, INT ioBufMaxSize, IServerController* pController)
+SessionManager::SessionManager(
+	const INT sessionNum, 
+	const INT sessionMaxNum, 
+	const INT ioBufMaxSize, 
+	IServerController* const pController,
+	Log* const pLog)
 	: m_SessionNumber(sessionNum)
 	, m_SessionMaxNumber(sessionMaxNum)
 	, m_IOBufMaxSize(ioBufMaxSize)
+	, m_Log(pLog)
 {
 	ThrowErrorIf(sessionNum > sessionMaxNum, SESSION_MAX, "Session number is over max limit");
 
@@ -20,7 +26,7 @@ SessionManager::SessionManager(INT sessionNum, INT sessionMaxNum, INT ioBufMaxSi
 		m_SessionIdPool.push(sessionId++);
 	}
 
-	Log::GetInstance()->Write(utils::Format("Create %d Sessions succesfully", sessionNum), LOG_LEVEL::DEBUG);
+	pLog->Write(LV::DEBUG, "Create %d Sessions succesfully", sessionNum);
 }
 
 // Retrieve available session id and count up total connected session number
@@ -90,7 +96,7 @@ DWORD SessionManager::PostRecv(SESSION* pSession)
 			if (error != WSA_IO_PENDING) return error;
 		}
 
-		Log::GetInstance()->Write("Posted WSARecv()", LOG_LEVEL::DEBUG);
+		m_Log->Write(LV::DEBUG, "Posted WSARecv()");
 	}
 
 	return 0;
@@ -139,7 +145,7 @@ DWORD SessionManager::PostSend(SESSION* pSession, size_t length, char* data)
 			if (error != WSA_IO_PENDING && error != ERROR_SUCCESS) return error;
 		}
 
-		Log::GetInstance()->Write("Posted WSARSend()", LOG_LEVEL::DEBUG);
+		m_Log->Write(LV::DEBUG, "Posted WSARSend()");
 	}
 
 	return 0;

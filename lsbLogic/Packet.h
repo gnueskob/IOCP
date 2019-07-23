@@ -110,6 +110,5 @@ namespace lsbLogic
 		short DataSize;
 		char Data[DEV_ECHO_DATA_MAX_SIZE];
 	};
-
 #pragma pop
 }

@@ -20,7 +20,10 @@ class Acceptor : public Thread
 {
 public:
 	Acceptor() = delete;
-	Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port);
+	Acceptor(AsyncIOServer* pServer, 
+		const char* ip, 
+		const u_short port, 
+		Log* const pLog);
 	~Acceptor() = default;
 	void Run() override;
 

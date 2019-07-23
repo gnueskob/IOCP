@@ -1,5 +1,14 @@
 #include "Log.h"
 
+#pragma warning( push )
+#pragma warning( disable : 4244 )
+//http://cppconlib.codeplex.com/
+//http://mariusbancila.ro/blog/2013/08/25/cppconlib-a-cpp-library-for-working-with-the-windows-console/
+#include "conmanip.h"
+#pragma warning( pop )
+
+using namespace conmanip;
+
 Log::Log()
 {
 	m_FileName = utils::GetDate();
@@ -45,7 +54,7 @@ void Log::Flush(const char* logMsg, LOG_LEVEL logLevel)
 
 	std::stringstream ss;
 	ss << "[" << date << "-" << time << "] " << logMsg;
-	std::string logMsg = ss.str();
+	std::string Msg = ss.str();
 
 	// TODO: split files if size exceeds threshold (not by date)
 	// TODO: make dir if it dosen't exist
@@ -61,26 +70,26 @@ void Log::Flush(const char* logMsg, LOG_LEVEL logLevel)
 	std::ofstream out(filePath, std::ios_base::out | std::ios_base::app);
 	if (out.is_open()) 
 	{ 
-		out << logMsg; 
+		out << Msg;
 	}
-	else 
-	{ 
+	else
+	{
 		switch (logLevel)
 		{
 		case LOG_LEVEL::INFO:
-			Info(logMsg);
+			Info(Msg.c_str());
 			break;
 		case LOG_LEVEL::ERR:
-			Error(logMsg);
+			Error(Msg.c_str());
 			break;
 		case LOG_LEVEL::WARN:
-			Warn(logMsg);
+			Warn(Msg.c_str());
 			break;
 		case LOG_LEVEL::DEBUG:
-			Debug(logMsg);
+			Debug(Msg.c_str());
 			break;
 		case LOG_LEVEL::TRACE:
-			Info(logMsg);
+			Info(Msg.c_str());
 			break;
 		default:
 			break;

@@ -1,59 +1,53 @@
 #include "AsyncIOServer.h"
 
 AsyncIOServer::AsyncIOServer(
-	IServerReceiver* const pReceiver,
-	const INT ioMaxSize,
-	const INT ioMinSize,
-	const INT threadNumber,
-	const INT sessionNumber,
-	const INT sessionMaxNum,
-	const std::string name,
-	const char* const ip,
-	const u_short port)
+	IServerReceiver* const pReceiver, ServerConfig config)
 	: m_pReceiver(pReceiver)
-	, m_ThreadNum(threadNumber)
-	, m_ServerName(name)
+	, m_ThreadNum(config.threadNumber)
+	, m_ServerName(config.name)
 	, m_IOCPHandle(INVALID_HANDLE_VALUE)
-	, m_Log(Log::GetInstance())
+	, m_Log(new Log())
 {
-	if (name == "") 
+	if (config.name == "")
 	{
 		m_ServerName = "AsyncIOServer_" + utils::GetDate(); 
 	}
 
 	// Initialize Log file name, level
-	Log::GetInstance()->Init(LOG_LEVEL::DEBUG, m_ServerName);
+	// Log::GetInstance()->Init(LOG_LEVEL::DEBUG, m_ServerName);
 
 	// Config conditions
-	ThrowErrorIf(ioMaxSize <= 0 || ioMinSize <= 0 || sessionMaxNum <= 0, 0UL, "configuration value is invalid");
+	ThrowErrorIf(config.ioMaxSize <= 0 
+		|| config.ioMinSize <= 0 
+		|| config.sessionMaxNum <= 0, 0UL, "configuration value is invalid");
 
 	// Check conditions
 	ThrowErrorIf(pReceiver == nullptr, WSAEINVAL, "Receiver nullptr");
-	ThrowErrorIf(threadNumber < 1, WSAEINVAL, "Thread number must over than 0");
-	ThrowErrorIf(ioMinSize > ioMaxSize, WSAEMSGSIZE, "ioMaxSize is too small than IO_MIN_SIZE");
-	ThrowErrorIf(sessionMaxNum < sessionNumber, WSAENOBUFS, "Session number exceeds max value");
+	ThrowErrorIf(config.threadNumber < 1, WSAEINVAL, "Thread number must over than 0");
+	ThrowErrorIf(config.ioMinSize > config.ioMaxSize, WSAEMSGSIZE, "ioMaxSize is too small than IO_MIN_SIZE");
+	ThrowErrorIf(config.sessionMaxNum < config.sessionNumber, WSAENOBUFS, "Session number exceeds max value");
 
 	// Create IOCP
-	m_IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, static_cast<ULONG_PTR>(0), threadNumber);
+	m_IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, static_cast<ULONG_PTR>(0), config.threadNumber);
 	ThrowLastErrorIf(m_IOCPHandle == INVALID_HANDLE_VALUE, "Fail create IOCP");
-	m_Log->Write("Create IOCP succesfully", LOG_LEVEL::DEBUG);
-	
+	m_Log->Write(LV::DEBUG, "Create IOCP succesfully");
+
 	// Initialize Session Manager (session pool, session id pool etc..)
-	m_pSessionManager = new SessionManager(sessionNumber, sessionMaxNum, ioMaxSize, this);
-	m_Log->Write("Create Session manager succesfully", LOG_LEVEL::DEBUG);
+	m_pSessionManager = new SessionManager(config.sessionNumber, config.sessionMaxNum, config.ioMaxSize, this, m_Log);
+	m_Log->Write(LV::DEBUG, "Create Session manager succesfully");
 
 	// Initialize Worker threads
-	for (INT i = 0; i < threadNumber; i++)
+	for (INT i = 0; i < config.threadNumber; i++)
 	{
-		m_Workers.push_back(std::make_shared<Worker>(pReceiver, m_IOCPHandle, m_pSessionManager, this));
+		m_Workers.push_back(std::make_shared<Worker>(pReceiver, m_IOCPHandle, m_pSessionManager, this, m_Log));
 	}
-	m_Log->Write(utils::Format("Create %d threads succesfully", threadNumber), LOG_LEVEL::DEBUG);
+	m_Log->Write(LV::DEBUG, "Create %d threads succesfully", config.threadNumber);
 
-	m_Log->Write("Server Initialized succesfully");
+	m_Log->Write(LV::INFO, "Server Initialized succesfully");
 
 	// Acceptor initialize
 	// Apply acceptor to my server
-	m_pAcceptor = new Acceptor(this, ip, port);
+	m_pAcceptor = new Acceptor(this, config.ip, config.port, m_Log);
 };
 
 AsyncIOServer::~AsyncIOServer()
@@ -102,7 +96,7 @@ SESSION* AsyncIOServer::LinkSocketToSession(SOCKET clientSocket)
 	// Link this session socket with client socket
 	auto pSession = m_pSessionManager->GetSessionPtr(sessionId);
 
-	m_Log->Write(utils::Format("[session #%u] Socket added to session", pSession->GetSessionDescRef().id));
+	m_Log->Write(LV::INFO, "[session #%u] Socket added to session", pSession->GetSessionDescRef().id);
 
 	// Add this socket to current IOCP handle using session id as completion key
 	auto res = ::CreateIoCompletionPort(
@@ -142,7 +136,7 @@ DWORD AsyncIOServer::RegisterClient(SOCKET clientSocket)
 	// Post receive IOCP job
 	auto error = m_pSessionManager->PostRecv(pSession);
 	if (error != FALSE) {
-		m_Log->Write(utils::Format("[Error %u] PostRecv failed", error), LOG_LEVEL::ERR);
+		m_Log->Write(LV::ERR, "[Error %u] PostRecv failed", error);
 		UnlinkSocketToSession(pSession->GetSessionId(), error);
 	}
 
@@ -158,7 +152,7 @@ DWORD AsyncIOServer::UnlinkSocketToSession(INT sessionId, DWORD error)
 	if (pSession->Close())
 	{
 		closesocket(pSession->GetSocket());
-		m_Log->Write(utils::Format("Socket closed %d", pSession->GetSocket()));
+		m_Log->Write(LV::DEBUG, "Socket closed %d", pSession->GetSocket());
 		m_pReceiver->NotifyClientDisconnected(pSession->GetSessionId());
 	}
 
@@ -169,9 +163,9 @@ DWORD AsyncIOServer::UnlinkSocketToSession(INT sessionId, DWORD error)
 	m_pSessionManager->returnId(sessionId);
 
 	if (error == FALSE)
-		m_Log->Write(utils::Format("[session #%u] Release Sokcet", sessionId));
+		m_Log->Write(LV::DEBUG, "[session #%u] Release Sokcet", sessionId);
 	else
-		m_Log->Write(utils::Format("[session #%u] Release Sokcet by Error #%d", sessionId, error), LOG_LEVEL::ERR);
+		m_Log->Write(LV::ERR, "[session #%u] Release Sokcet by Error #%d", sessionId, error);
 
 	return 0;
 }
