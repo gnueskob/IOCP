@@ -30,5 +30,6 @@ namespace lsbLogic
 		std::vector<User>	m_UserPool;
 		std::deque<int>		m_UserPoolIndex;
 		std::map<int, User*>	m_SessionUserDic;
+		std::map<const char*, User*>	m_IdUserDic;
 	};
 }
