@@ -35,7 +35,7 @@ namespace lsbLogic
 
 	ERROR_CODE UserManager::AddUser(const int sessionId, const char* id)
 	{
-		if (FindUser(sessionId) != nullptr)
+		if (m_IdUserDic.find(id) != m_IdUserDic.end())
 		{
 			return ERROR_CODE::USER_MGR_ID_DUPLICATION;
 		}
@@ -48,6 +48,7 @@ namespace lsbLogic
 
 		pUser->Set(sessionId, id);
 		m_SessionUserDic.insert({ sessionId, pUser });
+		m_IdUserDic.insert({ id, pUser });
 
 		return ERROR_CODE::NONE;
 	}
@@ -62,7 +63,9 @@ namespace lsbLogic
 		}
 
 		ReleaseUser(pUser->GetIndex());
+		pUser->Clear();
 		m_SessionUserDic.erase(sessionId);
+		m_IdUserDic.erase(pUser->GetId().c_str());
 
 		return ERROR_CODE::NONE;
 	}
@@ -88,7 +91,7 @@ namespace lsbLogic
 			return { ERROR_CODE::USER_MGR_INVALID_SESSION_INDEX, nullptr };
 		}
 
-		if (pUser->IsCurStateDisconnected())
+		if (pUser->IsCurStateNone())
 		{
 			return { ERROR_CODE::USER_MGR_NOT_CONFIRM_USER, nullptr };
 		}

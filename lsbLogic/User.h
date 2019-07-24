@@ -6,10 +6,9 @@ namespace lsbLogic
 {
 	enum class USER_STATE
 	{
-		DISCONNECTED = 0,
-		NONE = 1,
-		LOGIN = 2,
-		ROOM = 3,
+		NONE = 0,
+		LOGIN = 1,
+		ROOM = 2,
 	};
 
 	class User
@@ -21,13 +20,13 @@ namespace lsbLogic
 		{
 			m_SessionId = -1;
 			m_RoomId = -1;
-			m_State = USER_STATE::DISCONNECTED;
+			m_State = USER_STATE::NONE;
 			m_Id = "";
 		}
 
 		void Set(const int sessionId, const char* id)
 		{
-			m_State = USER_STATE::NONE;
+			m_State = USER_STATE::LOGIN;
 			m_SessionId = sessionId;
 			m_Id = id;
 		}
@@ -52,6 +51,11 @@ namespace lsbLogic
 			return m_RoomId;
 		}
 
+		void ChangeState(USER_STATE state)
+		{
+			m_State = state;
+		}
+
 		bool IsCurStateLogin() const
 		{
 			return m_State == USER_STATE::LOGIN;
@@ -65,11 +69,6 @@ namespace lsbLogic
 		bool IsCurStateNone() const
 		{
 			return m_State == USER_STATE::NONE;
-		}
-
-		bool IsCurStateDisconnected() const
-		{
-			return m_State == USER_STATE::DISCONNECTED;
 		}
 
 		void EnterRoom(const int roomIndex)
@@ -88,7 +87,7 @@ namespace lsbLogic
 		short			m_Index = -1;
 		short			m_RoomId = -1;
 		int				m_SessionId = -1;
-		USER_STATE		m_State = USER_STATE::DISCONNECTED;
+		USER_STATE		m_State = USER_STATE::NONE;
 		std::string		m_Id;
 	};
 }
