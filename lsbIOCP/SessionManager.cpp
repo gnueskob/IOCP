@@ -99,7 +99,7 @@ DWORD SessionManager::PostRecv(SESSION* pSession)
 }
 
 // Post WSASend
-DWORD SessionManager::PostSend(SESSION* pSession, size_t length, char* data)
+DWORD SessionManager::PostSend(SESSION* pSession, size_t length, char* data, short headerLength, char* header)
 {
 	// Check condition
 	if (length <= 0 || length > m_IOBufMaxSize) return WSAEMSGSIZE;
@@ -120,8 +120,16 @@ DWORD SessionManager::PostSend(SESSION* pSession, size_t length, char* data)
 
 		// Set type and copy data & length to WSAbuffer
 		lpOverlapped->type = OP_TYPE::SEND;
-		wsabuf.len = static_cast<ULONG>(length);
-		CopyMemory(wsabuf.buf, data, length);
+
+		int pos = 0;
+		if (headerLength > 0)
+		{
+			CopyMemory(wsabuf.buf, header, headerLength);
+			pos += headerLength;
+		}
+
+		wsabuf.len = static_cast<ULONG>(length + headerLength);
+		CopyMemory(wsabuf.buf + pos, data, length);
 
 		DWORD bufferCount = 1;
 		DWORD flags = 0;

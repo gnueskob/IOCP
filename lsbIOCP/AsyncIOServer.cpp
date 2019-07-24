@@ -1,11 +1,9 @@
 #include "AsyncIOServer.h"
 
 AsyncIOServer::AsyncIOServer(
-	IServerReceiver* const pReceiver, packetSizeFunc parseFunc)
+	IServerReceiver* const pReceiver, ServerConfig config, packetSizeFunc parseFunc)
 	: m_pReceiver(pReceiver), m_IOCPHandle(INVALID_HANDLE_VALUE), m_Log(new Log())
 {
-	ServerConfig config = LoadConfig();
-
 	if (config.name == "")
 	{
 		m_ServerName = "AsyncIOServer_" + utils::GetDate(); 
@@ -51,38 +49,6 @@ AsyncIOServer::~AsyncIOServer()
 	{
 		CloseHandle(m_IOCPHandle);
 	}
-}
-
-ServerConfig AsyncIOServer::LoadConfig()
-{
-	// TODO: get config input from args
-	const INT threadNumber = 2;
-
-	const INT sessionNumber = 1000;
-	const INT ioMaxSize = 1024;
-
-	const int bufferSize = 1024;
-	const int headerSize = 5;
-	const int maxPacketSize = 50;
-
-	const char* const ip = "127.0.0.1";
-	const u_short port = 23452;
-	const std::string name = "SampleServer";
-
-	ServerConfig config =
-	{
-		threadNumber,
-
-		sessionNumber,
-		ioMaxSize,
-
-		bufferSize,
-		headerSize,
-		maxPacketSize,
-
-		ip, port, name,
-	};
-	return config;
 }
 
 void AsyncIOServer::Start()

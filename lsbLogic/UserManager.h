@@ -3,7 +3,7 @@
 #include <tuple>
 #include <vector>
 #include <deque>
-#include <unordered_map>
+#include <map>
 
 #include "User.h"
 #include "ErrorCode.h"
@@ -29,6 +29,6 @@ namespace lsbLogic
 	private:
 		std::vector<User>	m_UserPool;
 		std::deque<int>		m_UserPoolIndex;
-		std::unordered_map<int, User*>	m_SessionUserDic;
+		std::map<int, User*>	m_SessionUserDic;
 	};
 }

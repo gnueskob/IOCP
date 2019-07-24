@@ -87,6 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,17 +124,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ConnectedUserManager.h" />
     <ClInclude Include="ErrorCode.h" />
-    <ClInclude Include="lsbLogicMain.h" />
+    <ClInclude Include="LogicMain.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketID.h" />
     <ClInclude Include="PacketProcess.h" />
+    <ClInclude Include="Room.h" />
+    <ClInclude Include="RoomManager.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UserManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lsbLogicReceiver.cpp" />
+    <ClCompile Include="LogicMain.cpp" />
+    <ClCompile Include="LogicReceiver.cpp" />
     <ClCompile Include="PacketProcess.cpp" />
+    <ClCompile Include="PacketProcessLogin.cpp" />
+    <ClCompile Include="PacketProcessRoom.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="UserManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

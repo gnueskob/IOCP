@@ -47,6 +47,11 @@ namespace lsbLogic
 			return m_Id;
 		}
 
+		const short GetRoomIndex() const
+		{
+			return m_RoomId;
+		}
+
 		bool IsCurStateLogin() const
 		{
 			return m_State == USER_STATE::LOGIN;
@@ -65,6 +70,18 @@ namespace lsbLogic
 		bool IsCurStateDisconnected() const
 		{
 			return m_State == USER_STATE::DISCONNECTED;
+		}
+
+		void EnterRoom(const int roomIndex)
+		{
+			m_RoomId = roomIndex;
+			m_State = USER_STATE::ROOM;
+		}
+
+		void LeaveRoom()
+		{
+			m_RoomId = -1;
+			m_State = USER_STATE::LOGIN;
 		}
 
 	private:

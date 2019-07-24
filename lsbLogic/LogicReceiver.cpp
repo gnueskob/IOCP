@@ -1,18 +1,18 @@
-#include "lsbLogicMain.h"
+#include "LogicMain.h"
 
 namespace lsbLogic
 {
-	void lsbLogicMain::NotifyClientConnected(SESSIONDESC& sessionDesc) const
+	void LogicMain::NotifyClientConnected(SESSIONDESC& sessionDesc) const
 	{
 		printf("Connected %d\n", sessionDesc.id);
 	}
 
-	void lsbLogicMain::NotifyClientDisconnected(INT sessionId) const
+	void LogicMain::NotifyClientDisconnected(INT sessionId) const
 	{
 		printf("Disconnected %d\n", sessionId);
 	}
 
-	void lsbLogicMain::NotifyMessage(SESSIONDESC& sessionDesc, size_t bytesNumber, char* data) const
+	void LogicMain::NotifyMessage(SESSIONDESC& sessionDesc, size_t bytesNumber, char* data) const
 	{
 		int sessionId = sessionDesc.id;
 		// 유저의 recv 패킷 버퍼에 write (packetBufferManager 이용)
@@ -20,7 +20,7 @@ namespace lsbLogic
 		// 아닐 시 return
 	}
 
-	void lsbLogicMain::NotifyServerConnectingResult(SESSIONDESC& sessionDesc, INT requestId, DWORD error) const
+	void LogicMain::NotifyServerConnectingResult(SESSIONDESC& sessionDesc, INT requestId, DWORD error) const
 	{
 		if (error != FALSE)
 			printf("connecting fail, error %d\n", error);

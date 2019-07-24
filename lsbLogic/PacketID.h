@@ -4,6 +4,9 @@ namespace lsbLogic
 {
 	enum class PACKET_ID : short
 	{
+		NTF_SYS_CONNECT_SESSION = 10,
+		NTF_SYS_CLOSE_SESSION = 11,
+
 		LOGIN_REQ = 21,
 		LOGIN_RES = 22,
 

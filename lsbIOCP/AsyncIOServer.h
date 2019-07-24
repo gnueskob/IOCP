@@ -14,43 +14,40 @@
 
 using workers = std::vector<std::shared_ptr<Worker>>;
 
-class ServerConfig
+struct ServerConfig
 {
-public:
-	const INT threadNumber;
+	INT threadNumber;
 
-	const INT sessionNumber;
-	const INT ioMaxSize;
+	INT sessionNumber;
+	INT ioMaxSize;
 
-	const int bufferSize;
-	const int headerSize;
-	const int maxPacketSize;
+	int bufferSize;
+	int headerSize;
+	int maxPacketSize;
 
-	const char* const ip;
-	const u_short port;
-	const std::string name;
+	const char* ip;
+	u_short port;
+	std::string name;
 };
 
 class AsyncIOServer : public IServerController
 {
 public:
 	AsyncIOServer() = delete;
-	AsyncIOServer(IServerReceiver* const pReceiver, packetSizeFunc parseFunc);
+	AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config, packetSizeFunc parseFunc);
 	~AsyncIOServer();
 	void Start();
 	void Stop();
 	void Join();
-
-	ServerConfig LoadConfig();
 
 	SESSION* LinkSocketToSession(SOCKET clientSocket);
 	DWORD UnlinkSocketToSession(INT sessionId, DWORD error);
 	DWORD RegisterClient(SOCKET clientSocket);
 
 	// IServerController
-	DWORD SendPacket(SESSIONDESC& sessionDesc, size_t length, char* data) override;
+	DWORD SendPacket(const INT sessionId, size_t length, char* data, short headerLength, char* header) override;
 	DWORD ConnectSocket(INT requestId, const char* ip, u_short port) override;
-	DWORD DisconnectSocket(SESSIONDESC& sessionDesc) override;
+	DWORD DisconnectSocket(const INT sessionId) override;
 
 private:
 	// Handler

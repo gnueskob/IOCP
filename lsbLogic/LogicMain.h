@@ -1,14 +1,22 @@
 #pragma once
 
 #include "..//lsbIOCP/IServer.h"
+#include "Packet.h"
 
 namespace lsbLogic
 {
-	class lsbLogicMain : public IServerReceiver
+	class LogicMain : public IServerReceiver
 	{
+	public:
+		ServerConfig m_Config;
+
+	public:
+		void Start();
+
 		// Manager pointer
+		void SendMsg(const int sessionId, const short packetId, const short length, char* data);
 
-
+	private:
 		/**************************************** IServerReceiver ****************************************/
 		// Triggered when client socket is connected
 		void NotifyClientConnected(SESSIONDESC& sessionDesc) const override;
@@ -21,5 +29,8 @@ namespace lsbLogic
 
 		// Triggered when the job of connecting to other server is completed
 		void NotifyServerConnectingResult(SESSIONDESC& session, INT requrestId, DWORD error) const override;
+
+	private:
+		IServerController* m_pController;
 	};
 }

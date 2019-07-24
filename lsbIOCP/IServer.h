@@ -4,9 +4,9 @@
 
 class IServerController {
 public:
-	virtual DWORD SendPacket(SESSIONDESC& sessionDesc, size_t length, char* data) = 0;
+	virtual DWORD SendPacket(const INT sessionId, size_t length, char* data, short headerLength, char* header) = 0;
 	virtual DWORD ConnectSocket(INT requestId, const char* ip, u_short port) = 0;
-	virtual DWORD DisconnectSocket(SESSIONDESC& sessionDesc) = 0;
+	virtual DWORD DisconnectSocket(const INT sessionId) = 0;
 };
 
 class IServerReceiver {

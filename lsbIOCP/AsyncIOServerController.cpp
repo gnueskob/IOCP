@@ -1,19 +1,19 @@
 #include "AsyncIOServer.h"
 
 // Server request sending some packet data to client
-DWORD AsyncIOServer::SendPacket(SESSIONDESC& sessionDesc, size_t length, char* data)
+DWORD AsyncIOServer::SendPacket(const INT sessionId, size_t length, char* data, short headerLength, char* header)
 {
 	m_Log->Write(LV::DEBUG, "Server request: send packet");
-	auto session = m_pSessionManager->GetSessionPtr(sessionDesc.id);
-	m_pSessionManager->PostSend(session, length, data);
+	auto session = m_pSessionManager->GetSessionPtr(sessionId);
+	m_pSessionManager->PostSend(session, length, data, short headerLength, char* header);
 	return 0;
 }
 
 // Server request disconnecting current client
-DWORD AsyncIOServer::DisconnectSocket(SESSIONDESC& sessionDesc)
+DWORD AsyncIOServer::DisconnectSocket(const INT sessionId)
 {
 	m_Log->Write(LV::DEBUG, "Server request: disconnect");
-	UnlinkSocketToSession(sessionDesc.id, 0);
+	UnlinkSocketToSession(sessionId, 0);
 	return 0;
 }
 
