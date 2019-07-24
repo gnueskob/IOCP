@@ -1,20 +1,33 @@
 #pragma once
 
 #include "Struct.h"
+#include "PacketBufferManager.h"
+
+class SessionConfig
+{
+public:
+	INT ioBufMaxSize;
+	IServerController* pController;
+};
 
 // Session struct including Session descriptor
 class SESSION
 {
 public:
 	SESSION() = default;
-	SESSION(INT ioBufMaxSize, IServerController* pController)
+	SESSION(SessionConfig sessionConfig, PacketBufferConfig pktBufferConfig, packetSizeFunc parseFunc)
 	{
-		m_SessionDesc.pController = pController;
-		m_pOverlappedRecv = new OVERLAPPED_EX(ioBufMaxSize);
-		m_pOverlappedSend = new OVERLAPPED_EX(ioBufMaxSize);
+		m_SessionDesc.pController = sessionConfig.pController;
+		m_pOverlappedRecv = new OVERLAPPED_EX(sessionConfig.ioBufMaxSize);
+		m_pOverlappedSend = new OVERLAPPED_EX(sessionConfig.ioBufMaxSize);
 		m_pOverlappedConn = new OVERLAPPED_EX(0);
 		m_RefCount.store(0);
 		m_IsOpened.store(false);
+
+		m_pSendBuffer = new PacketBufferManager();
+		m_pRecvBuffer = new PacketBufferManager();
+		m_pSendBuffer->Init(pktBufferConfig, parseFunc);
+		m_pRecvBuffer->Init(pktBufferConfig, parseFunc);
 	}
 	~SESSION()
 	{
@@ -114,6 +127,9 @@ private:
 	std::atomic_bool	m_IsOpened;
 
 	std::mutex			m_SendLock;
+
+	PacketBufferManager*	m_pSendBuffer;
+	PacketBufferManager*	m_pRecvBuffer;
 
 	OVERLAPPED_EX* m_pOverlappedSend;
 	OVERLAPPED_EX* m_pOverlappedRecv;

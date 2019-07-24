@@ -1,31 +1,26 @@
 #include "AsyncIOServer.h"
 
 AsyncIOServer::AsyncIOServer(
-	IServerReceiver* const pReceiver, ServerConfig config)
-	: m_pReceiver(pReceiver)
-	, m_ThreadNum(config.threadNumber)
-	, m_ServerName(config.name)
-	, m_IOCPHandle(INVALID_HANDLE_VALUE)
-	, m_Log(new Log())
+	IServerReceiver* const pReceiver, packetSizeFunc parseFunc)
+	: m_pReceiver(pReceiver), m_IOCPHandle(INVALID_HANDLE_VALUE), m_Log(new Log())
 {
+	ServerConfig config = LoadConfig();
+
 	if (config.name == "")
 	{
 		m_ServerName = "AsyncIOServer_" + utils::GetDate(); 
 	}
 
+	m_ThreadNum = config.threadNumber;
+	m_ServerName = config.name;
+
 	// Initialize Log file name, level
-	// Log::GetInstance()->Init(LOG_LEVEL::DEBUG, m_ServerName);
+	// m_Log->Init(LOG_LEVEL::DEBUG, m_ServerName);
 
 	// Config conditions
-	ThrowErrorIf(config.ioMaxSize <= 0 
-		|| config.ioMinSize <= 0 
-		|| config.sessionMaxNum <= 0, 0UL, "configuration value is invalid");
-
-	// Check conditions
+	ThrowErrorIf(config.ioMaxSize <= 0, WSAEMSGSIZE, "Buffer size is invalid");
 	ThrowErrorIf(pReceiver == nullptr, WSAEINVAL, "Receiver nullptr");
 	ThrowErrorIf(config.threadNumber < 1, WSAEINVAL, "Thread number must over than 0");
-	ThrowErrorIf(config.ioMinSize > config.ioMaxSize, WSAEMSGSIZE, "ioMaxSize is too small than IO_MIN_SIZE");
-	ThrowErrorIf(config.sessionMaxNum < config.sessionNumber, WSAENOBUFS, "Session number exceeds max value");
 
 	// Create IOCP
 	m_IOCPHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, static_cast<ULONG_PTR>(0), config.threadNumber);
@@ -33,7 +28,9 @@ AsyncIOServer::AsyncIOServer(
 	m_Log->Write(LV::DEBUG, "Create IOCP succesfully");
 
 	// Initialize Session Manager (session pool, session id pool etc..)
-	m_pSessionManager = new SessionManager(config.sessionNumber, config.sessionMaxNum, config.ioMaxSize, this, m_Log);
+	SessionConfig sessionConfig = { config.ioMaxSize, this };
+	PacketBufferConfig pktBufferConfig = { config.bufferSize, config.headerSize, config.maxPacketSize };
+	m_pSessionManager = new SessionManager(config.sessionNumber, sessionConfig, pktBufferConfig, parseFunc, m_Log);
 	m_Log->Write(LV::DEBUG, "Create Session manager succesfully");
 
 	// Initialize Worker threads
@@ -42,8 +39,6 @@ AsyncIOServer::AsyncIOServer(
 		m_Workers.push_back(std::make_shared<Worker>(pReceiver, m_IOCPHandle, m_pSessionManager, this, m_Log));
 	}
 	m_Log->Write(LV::DEBUG, "Create %d threads succesfully", config.threadNumber);
-
-	m_Log->Write(LV::INFO, "Server Initialized succesfully");
 
 	// Acceptor initialize
 	// Apply acceptor to my server
@@ -56,6 +51,38 @@ AsyncIOServer::~AsyncIOServer()
 	{
 		CloseHandle(m_IOCPHandle);
 	}
+}
+
+ServerConfig AsyncIOServer::LoadConfig()
+{
+	// TODO: get config input from args
+	const INT threadNumber = 2;
+
+	const INT sessionNumber = 1000;
+	const INT ioMaxSize = 1024;
+
+	const int bufferSize = 1024;
+	const int headerSize = 5;
+	const int maxPacketSize = 50;
+
+	const char* const ip = "127.0.0.1";
+	const u_short port = 23452;
+	const std::string name = "SampleServer";
+
+	ServerConfig config =
+	{
+		threadNumber,
+
+		sessionNumber,
+		ioMaxSize,
+
+		bufferSize,
+		headerSize,
+		maxPacketSize,
+
+		ip, port, name,
+	};
+	return config;
 }
 
 void AsyncIOServer::Start()
@@ -163,7 +190,7 @@ DWORD AsyncIOServer::UnlinkSocketToSession(INT sessionId, DWORD error)
 	m_pSessionManager->returnId(sessionId);
 
 	if (error == FALSE)
-		m_Log->Write(LV::DEBUG, "[session #%u] Release Sokcet", sessionId);
+		m_Log->Write(LV::INFO, "[session #%u] Release Sokcet", sessionId);
 	else
 		m_Log->Write(LV::ERR, "[session #%u] Release Sokcet by Error #%d", sessionId, error);
 

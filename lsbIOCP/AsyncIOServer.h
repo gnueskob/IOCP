@@ -17,11 +17,15 @@ using workers = std::vector<std::shared_ptr<Worker>>;
 class ServerConfig
 {
 public:
-	const INT ioMinSize;
-	const INT ioMaxSize;
 	const INT threadNumber;
+
 	const INT sessionNumber;
-	const INT sessionMaxNum;
+	const INT ioMaxSize;
+
+	const int bufferSize;
+	const int headerSize;
+	const int maxPacketSize;
+
 	const char* const ip;
 	const u_short port;
 	const std::string name;
@@ -31,11 +35,13 @@ class AsyncIOServer : public IServerController
 {
 public:
 	AsyncIOServer() = delete;
-	AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config);
+	AsyncIOServer(IServerReceiver* const pReceiver, packetSizeFunc parseFunc);
 	~AsyncIOServer();
 	void Start();
 	void Stop();
 	void Join();
+
+	ServerConfig LoadConfig();
 
 	SESSION* LinkSocketToSession(SOCKET clientSocket);
 	DWORD UnlinkSocketToSession(INT sessionId, DWORD error);

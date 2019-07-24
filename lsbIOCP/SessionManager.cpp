@@ -4,24 +4,20 @@
 // Create session object pool ( [sessionNum] sessions )
 // Set unique id of each session and push id to concurrent_queue (session id queue)
 SessionManager::SessionManager(
-	const INT sessionNum, 
-	const INT sessionMaxNum, 
-	const INT ioBufMaxSize, 
-	IServerController* const pController,
-	Log* const pLog)
-	: m_SessionNumber(sessionNum)
-	, m_SessionMaxNumber(sessionMaxNum)
-	, m_IOBufMaxSize(ioBufMaxSize)
-	, m_Log(pLog)
+	const INT sessionNum
+	, SessionConfig sessionConfig
+	, PacketBufferConfig pktBufferConfig
+	, packetSizeFunc parseFunc
+	, Log* const pLog)
+	: m_SessionNumber(sessionNum), m_IOBufMaxSize(sessionConfig.ioBufMaxSize), m_Log(pLog)
 {
-	ThrowErrorIf(sessionNum > sessionMaxNum, SESSION_MAX, "Session number is over max limit");
 
 	m_ConnectedSessionNumber.store(0);
 	INT sessionId = 0;
 	m_SessionPool.assign(sessionNum, nullptr);
 	for (auto& session : m_SessionPool)
 	{
-		session = new SESSION(ioBufMaxSize, pController);
+		session = new SESSION(sessionConfig, pktBufferConfig, parseFunc);
 		session->SetSessionId(sessionId);
 		m_SessionIdPool.push(sessionId++);
 	}

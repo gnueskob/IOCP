@@ -36,7 +36,7 @@ Acceptor::Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port, L
 	res = listen(m_listenSocket, 128);
 	ThrowErrorIf(res == SOCKET_ERROR, WSAGetLastError(), "[listen()] Fail listen");
 	
-	m_Log->Write(LV::INFO, "[%s, %d] accept started\n", ip, port);
+	m_Log->Write(LV::INFO, "[%s, %d] accept started", ip, port);
 }
 
 // Accept client socket

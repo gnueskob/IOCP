@@ -6,12 +6,19 @@
 
 using packetSizeFunc = std::function<int(char*)>;
 
+class PacketBufferConfig
+{
+public:
+	const int bufferSize;
+	const int headerSize;
+	const int maxPacketSize;
+};
+
 class PacketBufferManager
 {
 public:
-	PacketBufferManager(packetSizeFunc function) 
-		: GetPacketSize(function)
-		, m_ReadPos(0)
+	PacketBufferManager() 
+		: m_ReadPos(0)
 		, m_WritePos(0)
 		, m_BufferSize(0)
 		, m_HeaderSize(0)
@@ -23,19 +30,20 @@ public:
 		delete[] m_pPacketData;
 	}
 
-	bool Init(int size, int headerSize, int maxPacketSize)
+	bool Init(PacketBufferConfig config, packetSizeFunc parseFunc)
 	{
-		if (size < (maxPacketSize * 2) || headerSize < 1 || maxPacketSize < 1)
+		GetPacketSize = parseFunc;
+		if (config.bufferSize < (config.maxPacketSize * 2) || config.headerSize < 1 || config.maxPacketSize < 1)
 		{
 			return false;
 		}
 
 		m_ReadPos = 0;
 		m_WritePos = 0;
-		m_BufferSize = size;
-		m_HeaderSize = headerSize;
-		m_MaxPacketSize = maxPacketSize;
-		m_pPacketData = new char[size];
+		m_BufferSize = config.bufferSize;
+		m_HeaderSize = config.headerSize;
+		m_MaxPacketSize = config.maxPacketSize;
+		m_pPacketData = new char[config.bufferSize];
 
 		return true;
 	}
@@ -129,13 +137,13 @@ int GetPakcetSize(char* packet)
 
 // Bit converter
 template<typename T>
-T* BytesToType(const char* const pBytes, const int index = 0)
+T* BytesToType(char* const pBytes, const int index = 0)
 {
 	return reinterpret_cast<T*>(pBytes + index);
 }
 
 template<typename T>
-char* TypeToBytes(const T* const pData)
+char* TypeToBytes(T* const pData)
 {
 	return reinterpret_cast<char*>(pData);
 }

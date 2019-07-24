@@ -9,12 +9,12 @@ const int MAX_LOG_STRING_LENGTH = 256;
 
 enum LOG_LEVEL : short
 {
-	TRACE = 0,
+	DISABLE = 0,
+	TRACE,
 	DEBUG,
 	INFO,
 	WARN,
 	ERR,
-	DISABLE
 };
 
 class ILog

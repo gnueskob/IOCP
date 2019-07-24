@@ -14,11 +14,11 @@ class SessionManager
 public:
 	SessionManager() = delete;
 	SessionManager(
-		const INT sessionNum, 
-		const INT sessionMaxNum, 
-		const INT ioMaxBufSize, 
-		IServerController* const pController, 
-		Log* const pLog);
+		const INT sessionNum
+		, SessionConfig sessionConfig
+		, PacketBufferConfig pktBufferConfig
+		, packetSizeFunc parseFunc
+		, Log* const pLog);
 
 	bool retrieveId(INT& _out_sessionId);
 	void returnId(INT sessionId);
@@ -32,7 +32,6 @@ public:
 private:
 	using cqueue = Concurrency::concurrent_queue<INT>;
 	INT				m_IOBufMaxSize;
-	INT				m_SessionMaxNumber;
 	INT				m_SessionNumber;
 	cqueue			m_SessionIdPool;
 	std::vector<SESSION*>	m_SessionPool;

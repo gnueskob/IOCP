@@ -89,7 +89,7 @@ void Log::Flush(const char* logMsg, LOG_LEVEL logLevel)
 			Debug(Msg.c_str());
 			break;
 		case LOG_LEVEL::TRACE:
-			Info(Msg.c_str());
+			Trace(Msg.c_str());
 			break;
 		default:
 			break;
@@ -109,15 +109,15 @@ void Log::Warn(const char* pText)
 
 void Log::Debug(const char* pText)
 {
-	std::cout << settextcolor(console_text_colors::light_white) << "[DEBUG] | " << pText << std::endl;
+	std::cout << settextcolor(console_text_colors::cyan) << "[DEBUG] | " << pText << std::endl;
 }
 
 void Log::Trace(const char* pText)
 {
-	std::cout << settextcolor(console_text_colors::light_white) << "[TRACE] | " << pText << std::endl;
+	std::cout << settextcolor(console_text_colors::green) << "[TRACE] | " << pText << std::endl;
 }
 
 void Log::Info(const char* pText)
 {
-	std::cout << settextcolor(console_text_colors::green) << "[INFO] | " << pText << std::endl;
+	std::cout << settextcolor(console_text_colors::white) << "[INFO] | " << pText << std::endl;
 }
