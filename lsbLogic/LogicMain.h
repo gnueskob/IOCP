@@ -1,5 +1,6 @@
 #pragma once
 
+#include <queue>
 #include <concurrent_queue.h>
 
 #include "..//lsbIOCP/IServer.h"
@@ -63,7 +64,7 @@ namespace lsbLogic
 
 		bool m_IsRun = false;
 
-		Concurrency::concurrent_queue<PacketInfo> m_PacketQueue;
+		// Concurrency::concurrent_queue<PacketInfo> m_PacketQueue;
 
 		Log* m_Log;
 	};

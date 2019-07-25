@@ -6,6 +6,8 @@
 #include <mutex>
 #include <string>
 
+#include "PacketBufferManager.h"
+
 enum OP_TYPE { RECV, SEND, CONN };
 
 // Overlapped extended struct

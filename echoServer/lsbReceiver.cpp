@@ -16,9 +16,9 @@ void lsbReceiver::NotifyMessage(SESSIONDESC& sessionDesc, size_t bytesNumber, ch
 	memcpy(pbuffer, data, bytesNumber);
 
 	if ('q' == pbuffer[0])
-		sessionDesc.pController->DisconnectSocket(sessionDesc);
+		sessionDesc.pController->DisconnectSocket(sessionDesc.id);
 	else
-		sessionDesc.pController->SendPacket(sessionDesc, bytesNumber, pbuffer);
+		sessionDesc.pController->SendPacket(sessionDesc.id, bytesNumber, pbuffer, 0, 0);
 
 	delete[] pbuffer;
 }

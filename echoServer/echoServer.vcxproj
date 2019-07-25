@@ -161,6 +161,9 @@
     <ProjectReference Include="..\lsbIOCP\lsbIOCP.vcxproj">
       <Project>{c4319b70-024b-4081-9966-6c4c8e1d0727}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\lsbLogic\lsbLogic.vcxproj">
+      <Project>{8dadb2ae-8359-47ad-9f26-0472e3f0fd3b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lsbReceiver.h" />

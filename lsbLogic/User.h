@@ -14,7 +14,7 @@ namespace lsbLogic
 	class User
 	{
 	public:
-		User(const int index) : m_Index(index) {}
+		User(const short index) : m_Index(index) {}
 
 		void Clear()
 		{
@@ -71,7 +71,7 @@ namespace lsbLogic
 			return m_State == USER_STATE::NONE;
 		}
 
-		void EnterRoom(const int roomIndex)
+		void EnterRoom(const short roomIndex)
 		{
 			m_RoomId = roomIndex;
 			m_State = USER_STATE::ROOM;

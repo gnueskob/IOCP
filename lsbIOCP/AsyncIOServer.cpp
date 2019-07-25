@@ -1,7 +1,6 @@
 #include "AsyncIOServer.h"
 
-AsyncIOServer::AsyncIOServer(
-	IServerReceiver* const pReceiver, ServerConfig config, packetSizeFunc parseFunc)
+AsyncIOServer::AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config)
 	: m_pReceiver(pReceiver), m_IOCPHandle(INVALID_HANDLE_VALUE), m_Log(new Log())
 {
 	if (config.name == "")
@@ -28,7 +27,7 @@ AsyncIOServer::AsyncIOServer(
 	// Initialize Session Manager (session pool, session id pool etc..)
 	SessionConfig sessionConfig = { config.ioMaxSize, this };
 	PacketBufferConfig pktBufferConfig = { config.bufferSize, config.headerSize, config.maxPacketSize };
-	m_pSessionManager = new SessionManager(config.sessionNumber, sessionConfig, pktBufferConfig, parseFunc, m_Log);
+	m_pSessionManager = new SessionManager(config.sessionNumber, sessionConfig, pktBufferConfig, m_Log);
 	m_Log->Write(LV::DEBUG, "Create Session manager succesfully");
 
 	// Initialize Worker threads

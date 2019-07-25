@@ -34,7 +34,7 @@ class AsyncIOServer : public IServerController
 {
 public:
 	AsyncIOServer() = delete;
-	AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config, packetSizeFunc parseFunc);
+	AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config);
 	~AsyncIOServer();
 	void Start();
 	void Stop();

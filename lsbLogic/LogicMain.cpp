@@ -27,13 +27,13 @@ namespace lsbLogic
 		while (m_IsRun)
 		{
 			PacketInfo packetInfo;
-			if (m_PacketQueue.try_pop(packetInfo) == false)
+			// if (m_PacketQueue.try_pop(packetInfo) == false)
 			{
 				m_pConnUserMngr->LoginCheck();
 				continue;
 			}
 
-			m_pPktProc->Process(packetInfo);
+			// m_pPktProc->Process(packetInfo);
 		}
 	}
 
@@ -42,7 +42,7 @@ namespace lsbLogic
 		m_SConfig = serverConfig;
 		m_LConfig = logicConfig;
 
-		m_pNetwork = new AsyncIOServer(this, serverConfig, GetPacketSize);
+		m_pNetwork = new AsyncIOServer(this, serverConfig);
 		
 		m_Log = new Log();
 

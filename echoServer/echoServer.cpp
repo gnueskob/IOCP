@@ -1,12 +1,6 @@
 ﻿#include "../lsbLogic/LogicMain.h"
 #include "lsbReceiver.h"
 
-int GetPakcetSize(char* packet)
-{
-	int size = *BytesToType<int>(packet);
-	return size;
-}
-
 int main()
 {
 	const INT threadNumber = 2;
@@ -52,6 +46,8 @@ int main()
 	myServer.Start();
 
 	// TODO: key 입력 시 종료
+	char a;
+	std::cin >> a;
 
 	return 0;
 }

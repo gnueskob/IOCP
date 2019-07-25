@@ -8,7 +8,7 @@ namespace lsbLogic
 		PacketInfo packet;
 		packet.SessionId = sessionDesc.id;
 		packet.PacketId = static_cast<short>(PACKET_ID::NTF_SYS_CONNECT_SESSION);
-		m_PacketQueue.push(packet);
+		// m_PacketQueue.push(packet);
 	}
 
 	void LogicMain::NotifyClientDisconnected(INT sessionId) const
@@ -16,7 +16,7 @@ namespace lsbLogic
 		PacketInfo packet;
 		packet.SessionId = sessionId;
 		packet.PacketId = static_cast<short>(PACKET_ID::NTF_SYS_CLOSE_SESSION);
-		m_PacketQueue.push(packet);
+		// m_PacketQueue.push(packet);
 	}
 
 	void LogicMain::NotifyMessage(SESSIONDESC& sessionDesc, size_t bytesNumber, char* data) const
@@ -44,7 +44,7 @@ namespace lsbLogic
 		packet.PacketBodySize = pktHeader.PacketSize - PACKET_HEADER_SIZE;
 		packet.pData = pBody;
 
-		m_PacketQueue.push(packet);
+		// m_PacketQueue.push(packet);
 	}
 
 	void LogicMain::NotifyServerConnectingResult(SESSIONDESC& sessionDesc, INT requestId, DWORD error) const
