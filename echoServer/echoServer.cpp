@@ -1,6 +1,4 @@
-﻿#include "../lsbIOCP/Acceptor.h"
-#include "../lsbIOCP/AsyncIOServer.h"
-#include "../lsbIOCP/PacketBufferManager.h"
+﻿#include "../lsbLogic/LogicMain.h"
 #include "lsbReceiver.h"
 
 int GetPakcetSize(char* packet)
@@ -38,15 +36,22 @@ int main()
 		ip, port, name,
 	};
 
-	packetSizeFunc parseFunc = GetPakcetSize;
+	const int maxUserNum = 700;
+	const int maxRoomNum = 100;
+	const int maxUserNumInRoom = 10;
 
-	// Make custom receiver
-	lsbReceiver receiver;
+	lsbLogic::LogicConfig lconfig =
+	{
+		maxUserNum,
+		maxRoomNum,
+		maxUserNumInRoom,
+	};
 
-	// Make your server with custom receiver
-	AsyncIOServer lsbNetork(&receiver, config, parseFunc);
-	lsbNetork.Start();
-	lsbNetork.Join();
+	lsbLogic::LogicMain myServer;
+	myServer.Init(config, lconfig);
+	myServer.Start();
+
+	// TODO: key 입력 시 종료
 
 	return 0;
 }

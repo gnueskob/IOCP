@@ -1,11 +1,11 @@
 #include "AsyncIOServer.h"
 
 // Server request sending some packet data to client
-DWORD AsyncIOServer::SendPacket(const INT sessionId, size_t length, char* data, short headerLength, char* header)
+DWORD AsyncIOServer::SendPacket(const INT sessionId, size_t length, char* data, short headerLength, char* pHeader)
 {
 	m_Log->Write(LV::DEBUG, "Server request: send packet");
 	auto session = m_pSessionManager->GetSessionPtr(sessionId);
-	m_pSessionManager->PostSend(session, length, data, short headerLength, char* header);
+	m_pSessionManager->PostSend(session, length, data, headerLength, pHeader);
 	return 0;
 }
 

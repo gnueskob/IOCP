@@ -1,10 +1,25 @@
 #pragma once
 
+#include <concurrent_queue.h>
+
 #include "..//lsbIOCP/IServer.h"
+#include "..//lsbIOCP/AsyncIOServer.h"
 #include "Packet.h"
 
 namespace lsbLogic
 {
+	class UserManager;
+	class RoomManager;
+	class ConnectedUserManager;
+	class PacketProcess;
+
+	struct LogicConfig
+	{
+		int maxUserNum;
+		int maxRoomNum;
+		int maxUserNumInRoom;
+	};
+
 	class LogicMain : public IServerReceiver
 	{
 	public:
@@ -12,9 +27,15 @@ namespace lsbLogic
 
 	public:
 		void Start();
+		void Stop();
+		void Run();
 
 		// Manager pointer
+		void Init(ServerConfig m_SConfig, LogicConfig m_LConfig);
+
 		void SendMsg(const int sessionId, const short packetId, const short length, char* data);
+		void ForceClose(const int sessionId);
+		void ConnectServer(const int reqId, const char* ip, unsigned short port);
 
 	private:
 		/**************************************** IServerReceiver ****************************************/
@@ -31,6 +52,19 @@ namespace lsbLogic
 		void NotifyServerConnectingResult(SESSIONDESC& session, INT requrestId, DWORD error) const override;
 
 	private:
-		IServerController* m_pController;
+		AsyncIOServer* m_pNetwork;
+		UserManager* m_pUserMngr;
+		RoomManager* m_pRoomMngr;
+		ConnectedUserManager* m_pConnUserMngr;
+		PacketProcess* m_pPktProc;
+
+		ServerConfig m_SConfig;
+		LogicConfig m_LConfig;
+
+		bool m_IsRun = false;
+
+		Concurrency::concurrent_queue<PacketInfo> m_PacketQueue;
+
+		Log* m_Log;
 	};
 }

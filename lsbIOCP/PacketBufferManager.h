@@ -30,9 +30,8 @@ public:
 		delete[] m_pPacketData;
 	}
 
-	bool Init(PacketBufferConfig config, packetSizeFunc parseFunc)
+	bool Init(PacketBufferConfig config)
 	{
-		GetPacketSize = parseFunc;
 		if (config.bufferSize < (config.maxPacketSize * 2) || config.headerSize < 1 || config.maxPacketSize < 1)
 		{
 			return false;
@@ -72,13 +71,13 @@ public:
 	// Read n-bytes to destination.
 	// Before copy data to dest, dest array size will be checked 
 	// whether it's size is bigger than packet size being read
-	bool Read(char* pDest, int destMaxSize)
+	char* Read(char* pDest, int destMaxSize, packetSizeFunc GetPacketSize)
 	{
 		int readableSize = m_WritePos - m_ReadPos;
 
 		if (readableSize < m_HeaderSize)
 		{
-			return false;
+			return nullptr;
 		}
 
 		// Get the size of entire meaningful packet
@@ -86,12 +85,13 @@ public:
 		int packetSize = GetPacketSize(m_pPacketData + m_ReadPos);
 		if (readableSize < packetSize || destMaxSize < packetSize)
 		{
-			return false;
+			return nullptr;
 		}
 
-		CopyMemory(pDest, m_pPacketData + m_ReadPos, packetSize);
+		auto pPacketBody = m_pPacketData + m_ReadPos + m_HeaderSize;
+		CopyMemory(pDest, m_pPacketData + m_ReadPos, m_HeaderSize);
 		m_ReadPos += packetSize;
-		return true;
+		return pPacketBody;
 	}
 
 private:
@@ -118,13 +118,12 @@ protected:
 
 	int		m_HeaderSize = 0;
 	int		m_MaxPacketSize = 0;
-	
-	// Function for getting size of packet in header
-	// Because packet and header structure is decided by libaray user,
-	// the way getting packet size should be decided by user too.
-	packetSizeFunc GetPacketSize;
 };
 
+// Function for getting size of packet in header
+// Because packet and header structure is decided by user,
+// the way getting packet size should be decided by user too.
+// ---
 // Example of GetPacketSize function
 // when using first 4-bytes int of packet as entire packet size
 /*

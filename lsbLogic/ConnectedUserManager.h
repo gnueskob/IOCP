@@ -24,9 +24,6 @@ namespace lsbLogic
 	class ConnectedUserManager
 	{
 	public:
-		ConnectedUserManager() {}
-		virtual ~ConnectedUserManager() {}
-
 		void Init(IServerController* pController, const int maxSessionCount, bool IsLoginChk, Log* pLogger)
 		{
 			m_Log = pLogger;
@@ -55,6 +52,8 @@ namespace lsbLogic
 			ConnectedUserList[sessionIndex].Clear();
 		}
 
+		// TODO: 따로 스레드를 돌리되 처리할 내용이 있으면
+		// 패킷 큐를 이용해서 패킷 처리 스레드에게 넘기기
 		void LoginCheck()
 		{
 			if (m_IsLoginCheck == false) {

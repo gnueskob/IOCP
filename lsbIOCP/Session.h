@@ -15,7 +15,7 @@ class SESSION
 {
 public:
 	SESSION() = default;
-	SESSION(SessionConfig sessionConfig, PacketBufferConfig pktBufferConfig, packetSizeFunc parseFunc)
+	SESSION(SessionConfig sessionConfig, PacketBufferConfig pktBufferConfig)
 	{
 		m_SessionDesc.pController = sessionConfig.pController;
 		m_pOverlappedRecv = new OVERLAPPED_EX(sessionConfig.ioBufMaxSize);
@@ -24,10 +24,7 @@ public:
 		m_RefCount.store(0);
 		m_IsOpened.store(false);
 
-		m_pSendBuffer = new PacketBufferManager();
-		m_pRecvBuffer = new PacketBufferManager();
-		m_pSendBuffer->Init(pktBufferConfig, parseFunc);
-		m_pRecvBuffer->Init(pktBufferConfig, parseFunc);
+		m_SessionDesc.m_pPacketBuffer->Init(pktBufferConfig);
 	}
 	~SESSION()
 	{
@@ -127,9 +124,6 @@ private:
 	std::atomic_bool	m_IsOpened;
 
 	std::mutex			m_SendLock;
-
-	PacketBufferManager*	m_pSendBuffer;
-	PacketBufferManager*	m_pRecvBuffer;
 
 	OVERLAPPED_EX* m_pOverlappedSend;
 	OVERLAPPED_EX* m_pOverlappedRecv;

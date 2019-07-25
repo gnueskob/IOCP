@@ -17,7 +17,6 @@ public:
 		const INT sessionNum
 		, SessionConfig sessionConfig
 		, PacketBufferConfig pktBufferConfig
-		, packetSizeFunc parseFunc
 		, Log* const pLog);
 
 	bool retrieveId(INT& _out_sessionId);
@@ -27,7 +26,7 @@ public:
 	SESSION* GetSessionPtr(INT sessionId);
 
 	DWORD PostRecv(SESSION* session);
-	DWORD PostSend(SESSION* session, size_t length, char* data);
+	DWORD PostSend(SESSION* session, size_t length, char* data, short headerLength, char* header);
 
 private:
 	using cqueue = Concurrency::concurrent_queue<INT>;

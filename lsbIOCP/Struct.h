@@ -59,11 +59,13 @@ class SESSIONDESC
 public:
 	SESSIONDESC() 
 	{ 
-		ZeroMemory(&tick, sizeof(tick)); 
+		ZeroMemory(&tick, sizeof(tick));
+		m_pPacketBuffer = new PacketBufferManager();
 	};
 	SESSIONDESC(IServerController* pCrtl) : pController(pCrtl) 
 	{
-		ZeroMemory(&tick, sizeof(tick)); 
+		ZeroMemory(&tick, sizeof(tick));
+		m_pPacketBuffer = new PacketBufferManager();
 	}
 
 	bool CheckTick(SESSIONDESC& desc) const 
@@ -75,4 +77,6 @@ public:
 	INT				id = -1;
 	LARGE_INTEGER	tick;
 	IServerController* pController = nullptr;
+
+	PacketBufferManager* m_pPacketBuffer;
 };

@@ -7,7 +7,6 @@ SessionManager::SessionManager(
 	const INT sessionNum
 	, SessionConfig sessionConfig
 	, PacketBufferConfig pktBufferConfig
-	, packetSizeFunc parseFunc
 	, Log* const pLog)
 	: m_SessionNumber(sessionNum), m_IOBufMaxSize(sessionConfig.ioBufMaxSize), m_Log(pLog)
 {
@@ -17,7 +16,7 @@ SessionManager::SessionManager(
 	m_SessionPool.assign(sessionNum, nullptr);
 	for (auto& session : m_SessionPool)
 	{
-		session = new SESSION(sessionConfig, pktBufferConfig, parseFunc);
+		session = new SESSION(sessionConfig, pktBufferConfig);
 		session->SetSessionId(sessionId);
 		m_SessionIdPool.push(sessionId++);
 	}
