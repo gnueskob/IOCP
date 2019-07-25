@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -155,7 +155,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="echoServer.cpp" />
-    <ClCompile Include="lsbReceiver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lsbIOCP\lsbIOCP.vcxproj">
@@ -164,9 +163,6 @@
     <ProjectReference Include="..\lsbLogic\lsbLogic.vcxproj">
       <Project>{8dadb2ae-8359-47ad-9f26-0472e3f0fd3b}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="lsbReceiver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

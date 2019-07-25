@@ -1,5 +1,7 @@
-﻿#include "../lsbLogic/LogicMain.h"
-#include "lsbReceiver.h"
+﻿#include <iostream>
+#include <thread>
+
+#include "../lsbLogic/LogicMain.h"
 
 int main()
 {
@@ -45,9 +47,17 @@ int main()
 	myServer.Init(config, lconfig);
 	myServer.Start();
 
+	std::thread logicThread([&]()
+		{
+			myServer.Run();
+		}
+	);
+
 	// TODO: key 입력 시 종료
 	char a;
 	std::cin >> a;
+	myServer.Stop();
+	logicThread.join();
 
 	return 0;
 }

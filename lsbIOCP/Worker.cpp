@@ -134,9 +134,18 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 		}
 		else
 		{
-			// If got messages, notify to server
-			m_pReceiver->NotifyMessage(sessionDesc, transferredBytesNumber, overlappedEx->wsabuf.buf);
+			overlappedEx->bufferMngr.IncreseWrtiePos(transferredBytesNumber);
+			overlappedEx->bufferMngr.PreventBufferOverflow();
 
+			auto pData = overlappedEx->bufferMngr.ReadCurret();
+
+			// If got messages, notify to server
+			auto res = m_pReceiver->NotifyMessage(sessionDesc, transferredBytesNumber, pData);
+
+			if (res)
+			{
+				overlappedEx->bufferMngr.IncreseReadPos(transferredBytesNumber);
+			}
 			// And post WSARecv again
 			m_pSessionManager->PostRecv(session);
 		}
@@ -144,6 +153,7 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 
 		// Send message job
 	case OP_TYPE::SEND:
+		overlappedEx->bufferMngr.IncreseReadPos(transferredBytesNumber);
 		break;
 
 	default:

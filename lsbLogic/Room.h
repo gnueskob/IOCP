@@ -35,7 +35,7 @@ namespace lsbLogic
 		ERROR_CODE EnterUser(User* pUser);
 		ERROR_CODE LeaveUser(const short userIndex);
 
-		void SendToAllUser(const short packetId, const short dataSize, char* pData, const int passUserindex = -1);
+		void SendToAllUser(const short packetId, const short dataSize, char* pData, const int passUserindex);
 		void NotifyEnterUserInfo(const int userIndex, const char* pszUserID);
 		void NotifyLeaveUserInfo(const char* pszUserID);
 		void NotifyChat(const int sessionIndex, const char* pszUserID, const wchar_t* pszMsg);

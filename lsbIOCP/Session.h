@@ -18,9 +18,9 @@ public:
 	SESSION(SessionConfig sessionConfig, PacketBufferConfig pktBufferConfig)
 	{
 		m_SessionDesc.pController = sessionConfig.pController;
-		m_pOverlappedRecv = new OVERLAPPED_EX(sessionConfig.ioBufMaxSize);
-		m_pOverlappedSend = new OVERLAPPED_EX(sessionConfig.ioBufMaxSize);
-		m_pOverlappedConn = new OVERLAPPED_EX(0);
+		m_pOverlappedRecv = new OVERLAPPED_EX(pktBufferConfig, OP_TYPE::RECV);
+		m_pOverlappedSend = new OVERLAPPED_EX(pktBufferConfig, OP_TYPE::SEND);
+		m_pOverlappedConn = new OVERLAPPED_EX();
 		m_RefCount.store(0);
 		m_IsOpened.store(false);
 
@@ -51,17 +51,6 @@ public:
 	INT GetSessionId()
 	{
 		return m_SessionDesc.id;
-	}
-
-	void InitOverlapped(OP_TYPE type)
-	{
-		switch (type)
-		{
-		default:
-		case OP_TYPE::CONN: m_pOverlappedConn->Init(); break;
-		case OP_TYPE::RECV: m_pOverlappedRecv->Init(); break;
-		case OP_TYPE::SEND: m_pOverlappedSend->Init(); break;
-		}
 	}
 
 	OVERLAPPED_EX* GetOverlapped(OP_TYPE type)
@@ -112,6 +101,9 @@ public:
 		return m_IsOpened.load();
 	}
 
+public:
+	std::mutex			m_SendLock;
+
 private:
 	SESSIONDESC			m_SessionDesc;
 
@@ -122,8 +114,6 @@ private:
 	// atomic& operator=(const atomic&) = delete;
 	std::atomic_int		m_RefCount;	// ref count for pending IO to check before return unused session to pool
 	std::atomic_bool	m_IsOpened;
-
-	std::mutex			m_SendLock;
 
 	OVERLAPPED_EX* m_pOverlappedSend;
 	OVERLAPPED_EX* m_pOverlappedRecv;

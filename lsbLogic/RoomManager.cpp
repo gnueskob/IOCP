@@ -37,7 +37,7 @@ namespace lsbLogic
 
 	Room* RoomManager::FindRoom(const int index)
 	{
-		if (m_RoomPool[index].IsUsed == false)
+		if (m_RoomPool[index].IsUsed() == false)
 		{
 			return nullptr;
 		}

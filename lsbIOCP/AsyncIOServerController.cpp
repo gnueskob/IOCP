@@ -1,11 +1,21 @@
 #include "AsyncIOServer.h"
 
 // Server request sending some packet data to client
-DWORD AsyncIOServer::SendPacket(const INT sessionId, size_t length, char* data, short headerLength, char* pHeader)
+DWORD AsyncIOServer::SendPacket(const INT sessionId, short length, char* data, short headerLength, char* pHeader)
 {
 	m_Log->Write(LV::DEBUG, "Server request: send packet");
-	auto session = m_pSessionManager->GetSessionPtr(sessionId);
-	m_pSessionManager->PostSend(session, length, data, headerLength, pHeader);
+	auto pSession = m_pSessionManager->GetSessionPtr(sessionId);
+	auto overlappedEx = pSession->GetOverlapped(OP_TYPE::SEND);
+	auto totalLength = length + headerLength;
+
+	std::lock_guard<std::mutex> lock(pSession->m_SendLock);
+
+	if (headerLength > 0)
+	{
+		overlappedEx->bufferMngr.Write(pHeader, 0, headerLength);
+	}
+	overlappedEx->bufferMngr.Write(data, 0, length);
+	m_pSessionManager->PostSend(pSession, totalLength);
 	return 0;
 }
 

@@ -8,46 +8,46 @@
 
 #include "PacketBufferManager.h"
 
+struct ServerConfig
+{
+	INT threadNumber;
+
+	INT sessionNumber;
+	INT ioMaxSize;
+
+	int bufferSize;
+	int headerSize;
+	int maxPacketSize;
+
+	const char* ip;
+	u_short port;
+	std::string name;
+};
+
+
 enum OP_TYPE { RECV, SEND, CONN };
 
 // Overlapped extended struct
 class OVERLAPPED_EX
 {
 public:
-	OVERLAPPED_EX()
-	{
-		Init(); 
-		wsabuf.buf = nullptr; 
-	}
-
-	OVERLAPPED_EX(INT maxLength) : maxLength(maxLength)
-	{
-		Init();
-		if (0 < maxLength)
-		{
-			wsabuf.buf = new char[maxLength];
-		}
-	}
-
-	~OVERLAPPED_EX()
-	{
-		if (0 < maxLength)
-		{
-			delete[] wsabuf.buf;
-		}
-	}
-
-	void Init()
+	OVERLAPPED_EX() 
 	{
 		ZeroMemory(&overlapped, sizeof(overlapped));
-		wsabuf.len = 0;
+		type = OP_TYPE::CONN;
+	}
+
+	OVERLAPPED_EX(PacketBufferConfig pktBufferConfig, OP_TYPE _type) : type(_type)
+	{
+		ZeroMemory(&overlapped, sizeof(overlapped));
+		bufferMngr.Init(pktBufferConfig);
 	}
 
 public:
 	OVERLAPPED		overlapped;
-	WSABUF			wsabuf;
+	PacketBufferManager	bufferMngr;
 	OP_TYPE			type = OP_TYPE::RECV;
-	INT				maxLength = 0;			// Socket buffer max length // TODO: 없어도 괜찮지 않나?
+	// INT				length = 0;			// Socket buffer max length // TODO: 없어도 괜찮지 않나?
 	INT				requesterId = -1;		// [요청자가 건네는 구분값] for connectSocket()
 };
 

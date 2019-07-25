@@ -14,22 +14,6 @@
 
 using workers = std::vector<std::shared_ptr<Worker>>;
 
-struct ServerConfig
-{
-	INT threadNumber;
-
-	INT sessionNumber;
-	INT ioMaxSize;
-
-	int bufferSize;
-	int headerSize;
-	int maxPacketSize;
-
-	const char* ip;
-	u_short port;
-	std::string name;
-};
-
 class AsyncIOServer : public IServerController
 {
 public:
@@ -45,7 +29,7 @@ public:
 	DWORD RegisterClient(SOCKET clientSocket);
 
 	// IServerController
-	DWORD SendPacket(const INT sessionId, size_t length, char* data, short headerLength, char* header) override;
+	DWORD SendPacket(const INT sessionId, short length, char* data, short headerLength, char* header) override;
 	DWORD ConnectSocket(INT requestId, const char* ip, u_short port) override;
 	DWORD DisconnectSocket(const INT sessionId) override;
 

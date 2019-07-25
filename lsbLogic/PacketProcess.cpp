@@ -6,12 +6,14 @@ namespace lsbLogic
 		, UserManager* const pUserMngr
 		, RoomManager* const pRoomMngr
 		, ServerConfig serverConfig
+		, ConnectedUserManager* pConnUsrMngr
 		, Log* const pLogger)
 	{
 		m_pLogicMain = pLogicMain;
 		m_pUserMngr = pUserMngr;
 		m_pRoomMngr = pRoomMngr;
 		m_ServerConfig = serverConfig;
+		m_pConnectedUserManager = pConnUsrMngr;
 		m_Log = pLogger;
 
 		for (int i = 0; i < static_cast<int>(PACKET_ID::MAX); i++)
@@ -78,15 +80,15 @@ namespace lsbLogic
 
 	ERROR_CODE PacketProcess::DevEcho(PacketInfo packet)
 	{
+		auto packetSize = packet.PacketBodySize;
 		auto reqPkt = reinterpret_cast<PacketEchoReq*>(packet.pData);
 
 		PacketEchoRes resPkt;
 		resPkt.ErrorCode = (short)ERROR_CODE::NONE;
-		resPkt.DataSize = reqPkt->DataSize;
-		std::memcpy(&resPkt.Data, reqPkt->Data, reqPkt->DataSize);
+		std::memcpy(&resPkt.Data, reqPkt->Data, packetSize);
 
 		auto packetId = static_cast<short>(PACKET_ID::DEV_ECHO_RES);
-		auto sendSize = static_cast<short>(sizeof(PacketEchoRes)) - (DEV_ECHO_DATA_MAX_SIZE - reqPkt->DataSize);
+		auto sendSize = static_cast<short>(sizeof(PacketEchoRes)) - (DEV_ECHO_DATA_MAX_SIZE - packetSize);
 		auto data = reinterpret_cast<char*>(&resPkt);
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, static_cast<short>(sendSize), data);
 

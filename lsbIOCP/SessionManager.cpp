@@ -62,16 +62,15 @@ DWORD SessionManager::PostRecv(SESSION* pSession)
 		if (pSession->IsOpened() == false) return WSAEINVAL;
 
 		auto lpOverlapped = pSession->GetOverlapped(OP_TYPE::RECV);
-		auto& wsabuf = lpOverlapped->wsabuf;
+
+		WSABUF wsabuf;
+		wsabuf.buf = lpOverlapped->bufferMngr.WriteCurrent();
+		wsabuf.len = lpOverlapped->bufferMngr.WritableLength();
 
 		// session->enterIO();
 
 		// TODO: really needed?
-		lpOverlapped->Init();
-
-		// Set type and buffer max size
-		lpOverlapped->type = OP_TYPE::RECV;
-		wsabuf.len = static_cast<ULONG>(m_IOBufMaxSize);
+		// lpOverlapped->Init();
 
 		DWORD bufferCount = 1;
 		DWORD flags = 0;
@@ -98,11 +97,10 @@ DWORD SessionManager::PostRecv(SESSION* pSession)
 }
 
 // Post WSASend
-DWORD SessionManager::PostSend(SESSION* pSession, size_t length, char* data, short headerLength, char* header)
+DWORD SessionManager::PostSend(SESSION* pSession, size_t length)
 {
 	// Check condition
 	if (length <= 0 || length > m_IOBufMaxSize) return WSAEMSGSIZE;
-	if (length == 0 || data == nullptr) return WSAEINVAL;
 	if (pSession == nullptr) return WSAEINVAL;
 
 	// TODO: consider CAS structure by checking open flag
@@ -110,25 +108,15 @@ DWORD SessionManager::PostSend(SESSION* pSession, size_t length, char* data, sho
 		if (pSession->IsOpened() == false) return WSAEINVAL;
 
 		auto lpOverlapped = pSession->GetOverlapped(OP_TYPE::SEND);
-		auto& wsabuf = lpOverlapped->wsabuf;
+
+		WSABUF wsabuf;
+		wsabuf.buf = lpOverlapped->bufferMngr.ReadCurret();
+		wsabuf.len = static_cast<ULONG>(length);
 
 		// pSession->enterIO();
 
 		// TODO: really needed?
-		lpOverlapped->Init();
-
-		// Set type and copy data & length to WSAbuffer
-		lpOverlapped->type = OP_TYPE::SEND;
-
-		int pos = 0;
-		if (headerLength > 0)
-		{
-			CopyMemory(wsabuf.buf, header, headerLength);
-			pos += headerLength;
-		}
-
-		wsabuf.len = static_cast<ULONG>(length + headerLength);
-		CopyMemory(wsabuf.buf + pos, data, length);
+		// lpOverlapped->Init();
 
 		DWORD bufferCount = 1;
 		DWORD flags = 0;

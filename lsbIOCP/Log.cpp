@@ -12,7 +12,7 @@ using namespace conmanip;
 Log::Log()
 {
 	m_FileName = utils::GetDate();
-	ChangeLogLevel(LOG_LEVEL::INFO);
+	ChangeLogLevel(LOG_LEVEL::DEBUG);
 }
 
 void Log::Init(LOG_LEVEL logLevel, std::string& fileName)

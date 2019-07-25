@@ -1,6 +1,4 @@
-#include "../lsbIOCP/Acceptor.h"
-#include "../lsbIOCP/AsyncIOServer.h"
-#include "../lsbIOCP/PacketBufferManager.h"
+#include "..//lsbIOCP/AsyncIOServer.h"
 
 #include "ConnectedUserManager.h"
 #include "UserManager.h"
@@ -27,13 +25,13 @@ namespace lsbLogic
 		while (m_IsRun)
 		{
 			PacketInfo packetInfo;
-			// if (m_PacketQueue.try_pop(packetInfo) == false)
+			if (m_PacketQueue.try_pop(packetInfo) == false)
 			{
 				m_pConnUserMngr->LoginCheck();
 				continue;
 			}
 
-			// m_pPktProc->Process(packetInfo);
+			m_pPktProc->Process(packetInfo);
 		}
 	}
 
@@ -45,6 +43,8 @@ namespace lsbLogic
 		m_pNetwork = new AsyncIOServer(this, serverConfig);
 		
 		m_Log = new Log();
+		auto file = std::string("tempLog");
+		m_Log->Init(LV::DEBUG, file);
 
 		m_pUserMngr = new UserManager();
 		m_pUserMngr->Init(logicConfig.maxUserNum);
@@ -56,7 +56,7 @@ namespace lsbLogic
 		m_pConnUserMngr->Init(m_pNetwork, serverConfig.sessionNumber, true, m_Log);
 
 		m_pPktProc = new PacketProcess();
-		m_pPktProc->Init(this, m_pUserMngr, m_pRoomMngr, serverConfig, m_Log);
+		m_pPktProc->Init(this, m_pUserMngr, m_pRoomMngr, serverConfig, m_pConnUserMngr, m_Log);
 
 		m_Log->Write(LOG_LEVEL::INFO, "%s | Init Success", __FUNCTION__);
 	}
@@ -77,6 +77,4 @@ namespace lsbLogic
 	{
 		m_pNetwork->ConnectSocket(reqId, ip, port);
 	}
-
-
 }

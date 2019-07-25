@@ -66,6 +66,7 @@ public:
 		m_WritePos += size;
 
 		PreventBufferOverflow();
+		return true;
 	}
 
 	// Read n-bytes to destination.
@@ -94,7 +95,36 @@ public:
 		return pPacketBody;
 	}
 
-private:
+	void IncreseReadPos(int length)
+	{
+		m_ReadPos += length;
+	}
+
+	void IncreseWrtiePos(int length)
+	{
+		m_WritePos += length;
+	}
+
+	char* ReadCurret()
+	{
+		return m_pPacketData + m_ReadPos;
+	}
+
+	char* WriteCurrent()
+	{
+		return m_pPacketData + m_WritePos;
+	}
+
+	int WritableLength()
+	{
+		return m_BufferSize - m_WritePos;
+	}
+
+	int ReablableLength()
+	{
+		return m_WritePos - m_ReadPos;
+	}
+
 	// If write pointer is close to end (i.e., packet buffer is nearly full),
 	// pull foward pakcet data on the portion of buffer that alredy read
 	void PreventBufferOverflow()

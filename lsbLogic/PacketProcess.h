@@ -24,6 +24,7 @@ namespace lsbLogic
 			, UserManager* const pUserMngr
 			, RoomManager* const pConfig
 			, ServerConfig serverConfig
+			, ConnectedUserManager* pConnUsrMngr
 			, Log* const pLogger);
 
 		void Process(PacketInfo packetInfo);

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <allocators>
-
 #include "..//lsbIOCP/IServer.h"
 
 #include "PacketID.h"
@@ -11,6 +9,7 @@ namespace lsbLogic
 {
 	struct PacketInfo
 	{
+		PacketInfo() = default;
 		int SessionId = -1;
 		short PacketId = -1;
 		short PacketBodySize = 0;
@@ -110,20 +109,12 @@ namespace lsbLogic
 	const short DEV_ECHO_DATA_MAX_SIZE = 1024;
 	struct PacketEchoReq
 	{
-		short DataSize;
 		char Data[DEV_ECHO_DATA_MAX_SIZE];
 	};
 
 	struct PacketEchoRes : public PacketBase
 	{
-		short DataSize;
 		char Data[DEV_ECHO_DATA_MAX_SIZE];
 	};
-#pragma pop
-
-	int GetPacketSize(char* data)
-	{
-		PacketHeader* pktHeader = reinterpret_cast<PacketHeader*>(data);
-		return pktHeader->PacketSize;
-	}
+#pragma pack(pop)
 }

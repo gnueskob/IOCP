@@ -1,11 +1,14 @@
 #pragma once
 
-#include <queue>
 #include <concurrent_queue.h>
 
-#include "..//lsbIOCP/IServer.h"
-#include "..//lsbIOCP/AsyncIOServer.h"
+#include "../lsbIOCP/Struct.h"
+
 #include "Packet.h"
+#include "LogicConfig.h"
+
+class Log;
+class AsyncIOServer;
 
 namespace lsbLogic
 {
@@ -13,13 +16,6 @@ namespace lsbLogic
 	class RoomManager;
 	class ConnectedUserManager;
 	class PacketProcess;
-
-	struct LogicConfig
-	{
-		int maxUserNum;
-		int maxRoomNum;
-		int maxUserNumInRoom;
-	};
 
 	class LogicMain : public IServerReceiver
 	{
@@ -41,16 +37,16 @@ namespace lsbLogic
 	private:
 		/**************************************** IServerReceiver ****************************************/
 		// Triggered when client socket is connected
-		void NotifyClientConnected(SESSIONDESC& sessionDesc) const override;
+		void NotifyClientConnected(SESSIONDESC& sessionDesc) override;
 
 		// Triggered when socket is disconnected
-		void NotifyClientDisconnected(INT sessionId) const override;
+		void NotifyClientDisconnected(INT sessionId) override;
 
 		// Triggered when server get message from client
-		void NotifyMessage(SESSIONDESC& sessionDesc, size_t bytesNumber, char* data) const override;
+		bool NotifyMessage(SESSIONDESC& sessionDesc, size_t nBytes, char* pData) override;
 
 		// Triggered when the job of connecting to other server is completed
-		void NotifyServerConnectingResult(SESSIONDESC& session, INT requrestId, DWORD error) const override;
+		void NotifyServerConnectingResult(SESSIONDESC& session, INT requrestId, DWORD error) override;
 
 	private:
 		AsyncIOServer* m_pNetwork;
@@ -64,7 +60,7 @@ namespace lsbLogic
 
 		bool m_IsRun = false;
 
-		// Concurrency::concurrent_queue<PacketInfo> m_PacketQueue;
+		Concurrency::concurrent_queue<PacketInfo> m_PacketQueue;
 
 		Log* m_Log;
 	};

@@ -26,7 +26,7 @@ public:
 	SESSION* GetSessionPtr(INT sessionId);
 
 	DWORD PostRecv(SESSION* session);
-	DWORD PostSend(SESSION* session, size_t length, char* data, short headerLength, char* header);
+	DWORD PostSend(SESSION* session, size_t length);
 
 private:
 	using cqueue = Concurrency::concurrent_queue<INT>;
