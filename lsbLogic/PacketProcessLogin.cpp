@@ -23,6 +23,7 @@ namespace lsbLogic
 		{
 			resPkt.SetErrorCode(err);
 			m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data);
+			return err;
 		}
 
 		m_pConnectedUserManager->SetLogin(packet.SessionId);
@@ -54,7 +55,7 @@ namespace lsbLogic
 		if (pRoom)
 		{
 			pRoom->LeaveUser(pUser->GetIndex());
-			pRoom->NotifyLeaveUserInfo(pUser->GetId().c_str());
+			pRoom->NotifyLeaveUserInfo(pUser->GetIndex());
 
 			m_Log->Write(LOG_LEVEL::DEBUG, "%s | Logout. sessionIndex(%d). Room Out", __FUNCTION__, packet.SessionId);
 		}

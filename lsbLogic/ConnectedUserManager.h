@@ -99,7 +99,7 @@ namespace lsbLogic
 				}
 
 				auto diff = curSecTime - ConnectedUserList[i].m_ConnectedTime;
-				if (diff >= 180)
+				if (diff >= 3600)
 				{
 					m_Log->Write(LOG_LEVEL::WARN, "%s | Login Wait Time Over. sessionIndex(%d).", __FUNCTION__, i);
 					m_pController->DisconnectSocket(i);

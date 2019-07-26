@@ -3,6 +3,8 @@
 AsyncIOServer::AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config)
 	: m_pReceiver(pReceiver), m_IOCPHandle(INVALID_HANDLE_VALUE), m_Log(new Log())
 {
+	auto file = std::string("");
+	m_Log->Init(LV::DISABLE, file);
 	if (config.name == "")
 	{
 		m_ServerName = "AsyncIOServer_" + utils::GetDate(); 

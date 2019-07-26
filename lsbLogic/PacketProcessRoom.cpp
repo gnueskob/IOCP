@@ -14,6 +14,7 @@ namespace lsbLogic
 	{
 		auto reqPkt = (PacketRoomEnterReq*)packet.pData;
 		PacketRoomEnterRes resPkt;
+		resPkt.RoomIndex = -1;
 
 		auto packetId = static_cast<short>(PACKET_ID::ROOM_ENTER_RES);
 		auto sendSize = static_cast<short>(sizeof(resPkt));
@@ -50,6 +51,9 @@ namespace lsbLogic
 				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
 				return ret;
 			}
+
+			resPkt.RoomIndex = pRoom->GetIndex();
+			std::wmemcpy(resPkt.RoomTitle, reqPkt->RoomTitle, MAX_ROOM_TITLE_SIZE);
 		}
 		else
 		{
@@ -59,6 +63,9 @@ namespace lsbLogic
 				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
 				return ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX;
 			}
+
+			resPkt.RoomIndex = pRoom->GetIndex();
+			std::wmemcpy(resPkt.RoomTitle, pRoom->GetTitle(), MAX_ROOM_TITLE_SIZE);
 		}
 
 
@@ -76,6 +83,12 @@ namespace lsbLogic
 		pRoom->NotifyEnterUserInfo(pUser->GetIndex(), pUser->GetId().c_str());
 
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+		m_Log->Write(LOG_LEVEL::INFO, "%s | Enter Room. sessionId(%d)", __FUNCTION__, packet.SessionId);
+
+		// send user list
+		pRoom->NotifyUserList(packet.SessionId);
+		m_Log->Write(LOG_LEVEL::INFO, "%s | Give User List. sessionId(%d)", __FUNCTION__, packet.SessionId);
+
 		return ERROR_CODE::NONE;
 	}
 
@@ -120,9 +133,10 @@ namespace lsbLogic
 		pUser->LeaveRoom();
 
 		// 룸에 유저가 나갔음을 통보
-		pRoom->NotifyLeaveUserInfo(pUser->GetId().c_str());
+		pRoom->NotifyLeaveUserInfo(pUser->GetIndex());
 
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+		m_Log->Write(LOG_LEVEL::INFO, "%s | Leave Room. sessionId(%d)", __FUNCTION__, packet.SessionId);
 		return ERROR_CODE::NONE;
 	}
 
@@ -155,8 +169,8 @@ namespace lsbLogic
 			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
 			return ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX;
 		}
-
-		pRoom->NotifyChat(pUser->GetSessionId(), pUser->GetId().c_str(), reqPkt->Msg);
+		auto MsgLength = reqPkt->MsgLength;
+		pRoom->NotifyChat(pUser->GetIndex(), reqPkt->Msg, MsgLength);
 
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
 		return ERROR_CODE::NONE;

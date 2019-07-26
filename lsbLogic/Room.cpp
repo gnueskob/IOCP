@@ -7,7 +7,7 @@ namespace lsbLogic
 	void Room::Init(const short index, const short maxUserCount)
 	{
 		m_Index = index;
-		m_MaxUserCount = maxUserCount;
+		m_MaxUserCount = MAX_USER_COUNT;
 	}
 
 	void Room::SetHandler(LogicMain* pLogicMain, Log* pLogger)
@@ -113,34 +113,54 @@ namespace lsbLogic
 		}
 	}
 
-	void Room::NotifyEnterUserInfo(const int userIndex, const char* pszUserID)
+	void Room::NotifyUserList(const int sessionId)
+	{
+		PacketUserListRes pkt;
+		pkt.UserCount = static_cast<short>(m_UserList.size());
+		int i = 0;
+		for (auto [index, pUser] : m_UserList)
+		{
+			pkt.UserList[i].UserIndex = index;
+			std::memcpy(pkt.UserList[i].UserId, pUser->GetId().c_str(), MAX_USER_ID_SIZE);
+			i++;
+		}
+		auto packetId = static_cast<short>(PACKET_ID::ROOM_USER_LIST);
+		auto pktPtr = reinterpret_cast<char*>(&pkt);
+
+		m_pLogicMain->SendMsg(sessionId, packetId, sizeof(pkt), pktPtr);
+	}
+
+	void Room::NotifyEnterUserInfo(const short userIndex, const char* pszUserID)
 	{
 		PacketRoomEnterNtf pkt;
-		strncpy_s(pkt.UserId, MAX_USER_ID_SIZE + 1, pszUserID, MAX_USER_ID_SIZE);
+		pkt.User.UserIndex = static_cast<short>(userIndex);
+		strncpy_s(pkt.User.UserId, MAX_USER_ID_SIZE + 1, pszUserID, MAX_USER_ID_SIZE);
 
 		auto packetId = static_cast<short>(PACKET_ID::ROOM_ENTER_NEW_USER_NTF);
 		auto pktPtr = reinterpret_cast<char*>(&pkt);
 		SendToAllUser(packetId, sizeof(pkt), pktPtr, userIndex);
 	}
 
-	void Room::NotifyLeaveUserInfo(const char* pszUserID)
+	void Room::NotifyLeaveUserInfo(const short userIndex)
 	{
 		PacketRoomLeaveNtf pkt;
-		strncpy_s(pkt.UserId, MAX_USER_ID_SIZE + 1, pszUserID, MAX_USER_ID_SIZE);
+		pkt.UserIndex = userIndex;
 
 		auto packetId = static_cast<short>(PACKET_ID::ROOM_LEAVE_USER_NTF);
 		auto pktPtr = reinterpret_cast<char*>(&pkt);
 		SendToAllUser(packetId, sizeof(pkt), pktPtr);
 	}
 
-	void Room::NotifyChat(const int userIndex, const char* pszUserID, const wchar_t* pszMsg)
+	void Room::NotifyChat(const short userIndex, const wchar_t* pszMsg, const short msgLength)
 	{
 		PacketRoomChatNtf pkt;
-		strncpy_s(pkt.UserId, MAX_USER_ID_SIZE + 1, pszUserID, MAX_USER_ID_SIZE);
-		wcsncpy_s(pkt.Msg, MAX_ROOM_CHAT_MSG_SIZE + 1, pszMsg, MAX_ROOM_CHAT_MSG_SIZE);
+		pkt.UserIndex = userIndex;
+		pkt.MsgLength = msgLength;
+		wcsncpy_s(pkt.Msg, MAX_ROOM_CHAT_MSG_SIZE + 1, pszMsg, msgLength);
+		auto pktSize = sizeof(pkt) - MAX_ROOM_CHAT_MSG_SIZE + msgLength;
 
 		auto packetId = static_cast<short>(PACKET_ID::ROOM_CHAT_NTF);
 		auto pktPtr = reinterpret_cast<char*>(&pkt);
-		SendToAllUser(packetId, sizeof(pkt), pktPtr, userIndex);
+		SendToAllUser(packetId, static_cast<short>(pktSize), pktPtr);
 	}
 }

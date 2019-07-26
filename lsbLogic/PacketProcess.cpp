@@ -50,6 +50,8 @@ namespace lsbLogic
 	ERROR_CODE PacketProcess::NtfSysConnctSession(PacketInfo packet)
 	{
 		m_pConnectedUserManager->SetConnectSession(packet.SessionId);
+		m_Log->Write(LOG_LEVEL::INFO, "%s | ConnectSesson. sessionId(%d)", __FUNCTION__, packet.SessionId);
+
 		return ERROR_CODE::NONE;
 	}
 
@@ -64,7 +66,7 @@ namespace lsbLogic
 			if (pRoom)
 			{
 				pRoom->LeaveUser(pUser->GetIndex());
-				pRoom->NotifyLeaveUserInfo(pUser->GetId().c_str());
+				pRoom->NotifyLeaveUserInfo(pUser->GetIndex());
 					
 				m_Log->Write(LOG_LEVEL::INFO, "%s | NtfSysCloseSesson. sessionIndex(%d). Room Out", __FUNCTION__, packet.SessionId);
 			}
@@ -74,7 +76,7 @@ namespace lsbLogic
 
 		m_pConnectedUserManager->SetDisConnectSession(packet.SessionId);
 
-		m_Log->Write(LOG_LEVEL::INFO, "%s | NtfSysCloseSesson. sessionIndex(%d)", __FUNCTION__, packet.SessionId);
+		m_Log->Write(LOG_LEVEL::INFO, "%s | CloseSesson. sessionIndex(%d)", __FUNCTION__, packet.SessionId);
 		return ERROR_CODE::NONE;
 	}
 
@@ -84,13 +86,12 @@ namespace lsbLogic
 		auto reqPkt = reinterpret_cast<PacketEchoReq*>(packet.pData);
 
 		PacketEchoRes resPkt;
-		resPkt.ErrorCode = (short)ERROR_CODE::NONE;
 		std::memcpy(&resPkt.Data, reqPkt->Data, packetSize);
 
 		auto packetId = static_cast<short>(PACKET_ID::DEV_ECHO_RES);
-		auto sendSize = static_cast<short>(sizeof(PacketEchoRes)) - (DEV_ECHO_DATA_MAX_SIZE - packetSize);
+		// auto sendSize = static_cast<short>(sizeof(PacketEchoRes)) - (DEV_ECHO_DATA_MAX_SIZE - packetSize);
 		auto data = reinterpret_cast<char*>(&resPkt);
-		m_pLogicMain->SendMsg(packet.SessionId, packetId, static_cast<short>(sendSize), data);
+		m_pLogicMain->SendMsg(packet.SessionId, packetId, packetSize, data);
 
 		return ERROR_CODE::NONE;
 	}

@@ -62,16 +62,32 @@ namespace lsbLogic
 	{
 		bool IsCreate;
 		short RoomIndex;
-		wchar_t RoomTitle[MAX_ROOM_TITLE_SIZE + 1];
+		wchar_t RoomTitle[MAX_ROOM_TITLE_SIZE + 1] = { 0, };
 	};
 
 	struct PacketRoomEnterRes : public PacketBase
 	{
+		short RoomIndex;
+		wchar_t RoomTitle[MAX_ROOM_TITLE_SIZE + 1] = { 0, };
+	};
+
+	struct UserInfo
+	{
+		short UserIndex;
+		char UserId[MAX_USER_ID_SIZE + 1] = { 0, };
 	};
 
 	struct PacketRoomEnterNtf
 	{
-		char UserId[MAX_USER_ID_SIZE + 1] = { 0, };
+		UserInfo User;
+	};
+
+	// Packet struct for user list
+	const int MAX_USER_COUNT = 10;
+	struct PacketUserListRes : public PacketBase
+	{
+		short UserCount;
+		UserInfo UserList[MAX_USER_COUNT];
 	};
 
 	// Packet struct for leaving room
@@ -85,13 +101,14 @@ namespace lsbLogic
 
 	struct PacketRoomLeaveNtf
 	{
-		char UserId[MAX_USER_ID_SIZE + 1] = { 0, };
+		short UserIndex;
 	};
 
 	// Packet struct for chatting in room
 	const int MAX_ROOM_CHAT_MSG_SIZE = 256;
 	struct PacketRoomChatReq
 	{
+		short MsgLength;
 		wchar_t Msg[MAX_ROOM_CHAT_MSG_SIZE + 1] = { 0, };
 	};
 
@@ -101,7 +118,8 @@ namespace lsbLogic
 
 	struct PacketRoomChatNtf
 	{
-		char UserId[MAX_USER_ID_SIZE + 1] = { 0, };
+		short UserIndex;
+		short MsgLength;
 		wchar_t Msg[MAX_ROOM_CHAT_MSG_SIZE + 1] = { 0, };
 	};
 
@@ -112,7 +130,7 @@ namespace lsbLogic
 		char Data[DEV_ECHO_DATA_MAX_SIZE];
 	};
 
-	struct PacketEchoRes : public PacketBase
+	struct PacketEchoRes
 	{
 		char Data[DEV_ECHO_DATA_MAX_SIZE];
 	};

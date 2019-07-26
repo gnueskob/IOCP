@@ -50,7 +50,7 @@ namespace lsbLogic
 		m_pUserMngr->Init(logicConfig.maxUserNum);
 
 		m_pRoomMngr = new RoomManager();
-		m_pRoomMngr->Init(logicConfig.maxRoomNum, logicConfig.maxUserNumInRoom);
+		m_pRoomMngr->Init(this, logicConfig.maxRoomNum, m_Log);
 
 		m_pConnUserMngr = new ConnectedUserManager();
 		m_pConnUserMngr->Init(m_pNetwork, serverConfig.sessionNumber, true, m_Log);
