@@ -1,12 +1,12 @@
 #include "Worker.h"
 
-#include "AsyncIOServer.h"
+#include "AsyncIONetwork.h"
 
 Worker::Worker(
 	IServerReceiver* const pReceiver,
 	const HANDLE iocpHandle,
 	SessionManager* const pSessionManager,
-	AsyncIOServer* const pServer,
+	AsyncIONetwork* const pServer,
 	Log* const pLog)
 	: m_pReceiver(pReceiver)
 	, m_IOCPHandle(iocpHandle)

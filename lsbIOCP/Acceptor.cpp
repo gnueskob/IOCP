@@ -1,10 +1,10 @@
 #include "Acceptor.h"
-#include "AsyncIOServer.h"
+#include "AsyncIONetwork.h"
 
 bool Acceptor::m_winsock_dll = false;
 
 // Constructor of Acceptor
-Acceptor::Acceptor(AsyncIOServer* pServer, const char* ip, const u_short port, Log* pLog) 
+Acceptor::Acceptor(AsyncIONetwork* pServer, const char* ip, const u_short port, Log* pLog) 
 	: m_pServer(pServer), m_ip(ip), m_port(port), m_Log(pLog)
 {
 	// Load winsock.dll

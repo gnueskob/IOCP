@@ -1,4 +1,4 @@
-#include "..//lsbIOCP/AsyncIOServer.h"
+#include "..//lsbIOCP/AsyncIONetwork.h"
 
 #include "ConnectedUserManager.h"
 #include "UserManager.h"
@@ -45,7 +45,7 @@ namespace lsbLogic
 		serverConfig.maxPacketSize = PACKET_MAX_SIZE;
 		logicConfig.maxUserNumInRoom = MAX_ROOM_USER_COUNT;
 
-		m_pNetwork = new AsyncIOServer(this, serverConfig);
+		m_pNetwork = new AsyncIONetwork(this, serverConfig);
 		
 		m_Log = new Log();
 		auto file = std::string("tempLog");

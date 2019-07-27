@@ -10,9 +10,9 @@
 #include "Utils.h"
 #include "Thread.h"
 
-// For avoid cross reference of header "AsyncIOServer.h"
+// For avoid cross reference of header "AsyncIONetwork.h"
 // #include is declared in .cpp file
-class AsyncIOServer;
+class AsyncIONetwork;
 
 class Worker : public Thread
 {
@@ -22,7 +22,7 @@ public:
 		IServerReceiver* const pReceiver, 
 		const HANDLE iocpHandle, 
 		SessionManager* const pSessionManager, 
-		AsyncIOServer* const pServer, 
+		AsyncIONetwork* const pServer, 
 		Log* const pLog);
 	void Run() override;
 
@@ -34,7 +34,7 @@ private:
 private:
 	IServerReceiver* const		m_pReceiver;
 	SessionManager* const		m_pSessionManager;
-	AsyncIOServer* const	 	m_pServer;
+	AsyncIONetwork* const	 	m_pServer;
 	HANDLE				m_IOCPHandle;
 	Log*				m_Log;
 };

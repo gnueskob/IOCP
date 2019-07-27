@@ -14,12 +14,12 @@
 
 using workers = std::vector<std::shared_ptr<Worker>>;
 
-class AsyncIOServer : public IServerController
+class AsyncIONetwork : public IServerController
 {
 public:
-	AsyncIOServer() = delete;
-	AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config);
-	~AsyncIOServer();
+	AsyncIONetwork() = delete;
+	AsyncIONetwork(IServerReceiver* const pReceiver, ServerConfig config);
+	~AsyncIONetwork();
 	void Start();
 	void Stop();
 	void Join();
@@ -40,7 +40,7 @@ private:
 	Acceptor*			m_pAcceptor;
 	HANDLE				m_IOCPHandle;
 
-	// AsyncIOServer config
+	// AsyncIONetwork config
 	INT				m_ThreadNum;
 	workers			m_Workers;
 	std::string		m_ServerName;

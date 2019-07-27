@@ -14,13 +14,13 @@
 // https://m.blog.naver.com/PostView.nhn?blogId=gimjoonbum&logNo=220065601788&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 #pragma comment(lib, "ws2_32.lib")
 
-class AsyncIOServer;
+class AsyncIONetwork;
 
 class Acceptor : public Thread
 {
 public:
 	Acceptor() = delete;
-	Acceptor(AsyncIOServer* pServer, 
+	Acceptor(AsyncIONetwork* pServer, 
 		const char* ip, 
 		const u_short port, 
 		Log* const pLog);
@@ -32,7 +32,7 @@ private:
 
 private:
 	// Server to process from client socket
-	AsyncIOServer*	m_pServer;
+	AsyncIONetwork*	m_pServer;
 	
 	// Server listen socket
 	SOCKET			m_listenSocket;

@@ -8,7 +8,7 @@
 #include "LogicConfig.h"
 
 class Log;
-class AsyncIOServer;
+class AsyncIONetwork;
 
 namespace lsbLogic
 {
@@ -49,7 +49,7 @@ namespace lsbLogic
 		void NotifyServerConnectingResult(SESSIONDESC& session, INT requrestId, DWORD error) override;
 
 	private:
-		AsyncIOServer* m_pNetwork;
+		AsyncIONetwork* m_pNetwork;
 		UserManager* m_pUserMngr;
 		RoomManager* m_pRoomMngr;
 		ConnectedUserManager* m_pConnUserMngr;

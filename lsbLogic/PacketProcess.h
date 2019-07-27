@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..//lsbIOCP/IServer.h"
-#include "..//lsbIOCP/AsyncIOServer.h"
+#include "..//lsbIOCP/AsyncIONetwork.h"
 
 #include "ConnectedUserManager.h"
 #include "RoomManager.h"

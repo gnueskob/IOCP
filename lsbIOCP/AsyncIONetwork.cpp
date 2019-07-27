@@ -1,13 +1,13 @@
-#include "AsyncIOServer.h"
+#include "AsyncIONetwork.h"
 
-AsyncIOServer::AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig config)
+AsyncIONetwork::AsyncIONetwork(IServerReceiver* const pReceiver, ServerConfig config)
 	: m_pReceiver(pReceiver), m_IOCPHandle(INVALID_HANDLE_VALUE), m_Log(new Log())
 {
 	auto file = std::string("");
 	m_Log->Init(LV::DISABLE, file);
 	if (config.name == "")
 	{
-		m_ServerName = "AsyncIOServer_" + utils::GetDate(); 
+		m_ServerName = "AsyncIONetwork_" + utils::GetDate(); 
 	}
 
 	m_ThreadNum = config.threadNumber;
@@ -44,7 +44,7 @@ AsyncIOServer::AsyncIOServer(IServerReceiver* const pReceiver, ServerConfig conf
 	m_pAcceptor = new Acceptor(this, config.ip, config.port, m_Log);
 };
 
-AsyncIOServer::~AsyncIOServer()
+AsyncIONetwork::~AsyncIONetwork()
 {
 	if (INVALID_HANDLE_VALUE != m_IOCPHandle)
 	{
@@ -52,7 +52,7 @@ AsyncIOServer::~AsyncIOServer()
 	}
 }
 
-void AsyncIOServer::Start()
+void AsyncIONetwork::Start()
 {
 	m_pAcceptor->Start();
 	for (auto& worker : m_Workers)
@@ -61,7 +61,7 @@ void AsyncIOServer::Start()
 	}
 }
 
-void AsyncIOServer::Stop()
+void AsyncIONetwork::Stop()
 {
 	m_pAcceptor->Stop();
 	for (auto& worker : m_Workers)
@@ -70,7 +70,7 @@ void AsyncIOServer::Stop()
 	}
 }
 
-void AsyncIOServer::Join()
+void AsyncIONetwork::Join()
 {
 	m_pAcceptor->Join();
 	for (auto& worker : m_Workers)
@@ -81,7 +81,7 @@ void AsyncIOServer::Join()
 
 // Apply socket id to available session
 // Warning : not yet opend socket flag
-SESSION* AsyncIOServer::LinkSocketToSession(SOCKET clientSocket)
+SESSION* AsyncIONetwork::LinkSocketToSession(SOCKET clientSocket)
 {
 	// Get available session id from 'session id pool' (concurrent queue)
 	INT sessionId;
@@ -115,7 +115,7 @@ SESSION* AsyncIOServer::LinkSocketToSession(SOCKET clientSocket)
 
 // Register already accepted client socket to server
 // Then, notify to server the result and post receive
-DWORD AsyncIOServer::RegisterClient(SOCKET clientSocket)
+DWORD AsyncIONetwork::RegisterClient(SOCKET clientSocket)
 {
 	// Apply socket id to available session
 	auto pSession = LinkSocketToSession(clientSocket);
@@ -139,7 +139,7 @@ DWORD AsyncIOServer::RegisterClient(SOCKET clientSocket)
 }
 
 // Release current session id & close the socket if possible
-DWORD AsyncIOServer::UnlinkSocketToSession(INT sessionId, DWORD error)
+DWORD AsyncIONetwork::UnlinkSocketToSession(INT sessionId, DWORD error)
 {
 	auto pSession = m_pSessionManager->GetSessionPtr(sessionId);
 
