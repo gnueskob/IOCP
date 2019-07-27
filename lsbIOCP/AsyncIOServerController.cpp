@@ -12,9 +12,23 @@ DWORD AsyncIOServer::SendPacket(const INT sessionId, short length, char* data, s
 
 	if (headerLength > 0)
 	{
-		overlappedEx->bufferMngr.Write(pHeader, 0, headerLength);
+		auto ret = overlappedEx->bufferMngr.Write(pHeader, 0, headerLength, false);
+		if (ret == false)
+		{
+			// 버퍼를 꽉 채울만큼 통신이 제대로 이뤄지지 않는 상황이므로 연결을 해제한다.
+			// TODO: ERROR CODE 정의
+			UnlinkSocketToSession(sessionId, ret);
+			return ret;
+		}
 	}
-	overlappedEx->bufferMngr.Write(data, 0, length);
+	auto ret = overlappedEx->bufferMngr.Write(data, 0, length);
+	if (ret == false)
+	{
+		// TODO: ERROR CODE 정의
+		UnlinkSocketToSession(sessionId, ret);
+		return ret;
+	}
+
 	m_pSessionManager->PostSend(pSession, totalLength);
 	return 0;
 }

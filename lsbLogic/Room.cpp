@@ -7,7 +7,7 @@ namespace lsbLogic
 	void Room::Init(const short index, const short maxUserCount)
 	{
 		m_Index = index;
-		m_MaxUserCount = MAX_USER_COUNT;
+		m_MaxUserCount = maxUserCount;
 	}
 
 	void Room::SetHandler(LogicMain* pLogicMain, Log* pLogger)

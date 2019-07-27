@@ -9,7 +9,8 @@ namespace lsbLogic
 		{
 			m_RoomIndexPool.push_back(i);
 			Room room;
-			room.Init(i, MAX_USER_COUNT);
+			// TODO: 방당 유저 수 config에서 받기 
+			room.Init(i, MAX_ROOM_USER_COUNT);
 			room.SetHandler(pLogicMain, pLogger);
 
 			m_RoomPool.push_back(room);

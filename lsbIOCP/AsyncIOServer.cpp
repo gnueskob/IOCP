@@ -89,8 +89,7 @@ SESSION* AsyncIOServer::LinkSocketToSession(SOCKET clientSocket)
 
 	// Link this session socket with client socket
 	auto pSession = m_pSessionManager->GetSessionPtr(sessionId);
-
-	m_Log->Write(LV::INFO, "[session #%u] Socket added to session", pSession->GetSessionDescRef().id);
+	pSession->Clear();
 
 	// Add this socket to current IOCP handle using session id as completion key
 	auto res = ::CreateIoCompletionPort(
@@ -108,6 +107,8 @@ SESSION* AsyncIOServer::LinkSocketToSession(SOCKET clientSocket)
 	}
 
 	pSession->SetSocket(clientSocket);
+
+	m_Log->Write(LV::INFO, "[session #%u] Socket added to session", sessionId);
 
 	return pSession;
 }

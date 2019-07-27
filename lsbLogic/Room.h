@@ -42,15 +42,15 @@ namespace lsbLogic
 		void NotifyChat(const short userIndex, const wchar_t* pszMsg, const short msgLength);
 
 	private:
-		Log* m_pLog;
+		Log* m_pLog = nullptr;
 
 		short m_Index = -1;
-		short m_MaxUserCount;
+		short m_MaxUserCount = 0;
 
 		bool m_IsUsed = false;
 		std::wstring m_Title;
 		std::map<short, User*> m_UserList;
 
-		LogicMain*	m_pLogicMain;
+		LogicMain*	m_pLogicMain = nullptr;
 	};
 }

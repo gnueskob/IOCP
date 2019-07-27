@@ -134,17 +134,24 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 		}
 		else
 		{
-			overlappedEx->bufferMngr.IncreseWrtiePos(transferredBytesNumber);
-			overlappedEx->bufferMngr.PreventBufferOverflow();
+			auto ret = overlappedEx->bufferMngr.IncreseWrtiePos(transferredBytesNumber);
+			if (ret == false)
+			{
+				// 서버가 Recv한 데이터를 처리하지 못하고 버퍼가 가득차있는 경우... 서버에 무슨 문제가???
+				m_pServer->UnlinkSocketToSession(sessionId, ret);
+			}
 
-			auto pData = overlappedEx->bufferMngr.ReadCurret();
+			auto pData = overlappedEx->bufferMngr.Read(transferredBytesNumber);
 
 			// If got messages, notify to server
 			auto res = m_pReceiver->NotifyMessage(sessionDesc, transferredBytesNumber, pData);
 
+			// 서버에서 데이터를 읽어갔다면 읽음 표시처리
+			// TODO: 지금은 데이터를 읽고 난 후 패킷 body 포인터를 패킷 처리 스레드로 넘겨줄 뿐 해당 패킷 바디데이터가 언제 사용완료 될지 모름
+			// 만약 패킷 처리가 늦고, Recv하는 데이터가 많아진다면 아직 처리되지 않은 패킷의 body 데이터가 덮어씌워질 수 있음
 			if (res)
 			{
-				overlappedEx->bufferMngr.IncreseReadPos(transferredBytesNumber);
+				overlappedEx->bufferMngr.ReadComplete(transferredBytesNumber);
 			}
 			// And post WSARecv again
 			m_pSessionManager->PostRecv(session);
@@ -153,7 +160,9 @@ void Worker::DispatchCompleteion(DWORD transferredBytesNumber, LPOVERLAPPED lpOv
 
 		// Send message job
 	case OP_TYPE::SEND:
-		overlappedEx->bufferMngr.IncreseReadPos(transferredBytesNumber);
+		// 버퍼 데이터를 성공적으로 소켓 버퍼로 내려보냄
+		// 버퍼읽기 커서를 재정의하여 공간 재사용
+		overlappedEx->bufferMngr.ReadComplete(transferredBytesNumber);
 		break;
 
 	default:

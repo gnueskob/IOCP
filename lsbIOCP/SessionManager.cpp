@@ -65,7 +65,7 @@ DWORD SessionManager::PostRecv(SESSION* pSession)
 
 		WSABUF wsabuf;
 		wsabuf.buf = lpOverlapped->bufferMngr.WriteCurrent();
-		wsabuf.len = lpOverlapped->bufferMngr.WritableLength();
+		wsabuf.len = lpOverlapped->bufferMngr.MaxWriteLegnth();
 
 		// session->enterIO();
 
@@ -110,7 +110,7 @@ DWORD SessionManager::PostSend(SESSION* pSession, size_t length)
 		auto lpOverlapped = pSession->GetOverlapped(OP_TYPE::SEND);
 
 		WSABUF wsabuf;
-		wsabuf.buf = lpOverlapped->bufferMngr.ReadCurret();
+		wsabuf.buf = lpOverlapped->bufferMngr.Read(static_cast<int>(length));
 		wsabuf.len = static_cast<ULONG>(length);
 
 		// pSession->enterIO();

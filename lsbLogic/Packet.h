@@ -24,7 +24,7 @@ namespace lsbLogic
 		unsigned char Reserved;
 	};
 	const int PACKET_HEADER_SIZE = sizeof(PacketHeader);
-	const int PACKET_MAX_SIZE = 300;
+	const int PACKET_MAX_SIZE = 250;
 
 	struct PacketBase
 	{
@@ -83,11 +83,11 @@ namespace lsbLogic
 	};
 
 	// Packet struct for user list
-	const int MAX_USER_COUNT = 10;
+	const int MAX_ROOM_USER_COUNT = 10;
 	struct PacketUserListRes : public PacketBase
 	{
 		short UserCount;
-		UserInfo UserList[MAX_USER_COUNT];
+		UserInfo UserList[MAX_ROOM_USER_COUNT];
 	};
 
 	// Packet struct for leaving room
@@ -105,7 +105,7 @@ namespace lsbLogic
 	};
 
 	// Packet struct for chatting in room
-	const int MAX_ROOM_CHAT_MSG_SIZE = 256;
+	const int MAX_ROOM_CHAT_MSG_SIZE = 100;
 	struct PacketRoomChatReq
 	{
 		short MsgLength;

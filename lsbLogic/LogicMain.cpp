@@ -42,6 +42,9 @@ namespace lsbLogic
 		m_SConfig = serverConfig;
 		m_LConfig = logicConfig;
 
+		serverConfig.maxPacketSize = PACKET_MAX_SIZE;
+		logicConfig.maxUserNumInRoom = MAX_ROOM_USER_COUNT;
+
 		m_pNetwork = new AsyncIOServer(this, serverConfig);
 		
 		m_Log = new Log();

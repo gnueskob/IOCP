@@ -43,6 +43,12 @@ public:
 		bufferMngr.Init(pktBufferConfig);
 	}
 
+	void Clear()
+	{
+		requesterId = -1;
+		bufferMngr.Clear();
+	}
+
 public:
 	OVERLAPPED		overlapped;
 	PacketBufferManager	bufferMngr;

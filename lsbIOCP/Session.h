@@ -15,16 +15,14 @@ class SESSION
 {
 public:
 	SESSION() = default;
-	SESSION(SessionConfig sessionConfig, PacketBufferConfig pktBufferConfig)
+	SESSION(SessionConfig sessionConfig, PacketBufferConfig packetBufferConfig)
 	{
 		m_SessionDesc.pController = sessionConfig.pController;
-		m_pOverlappedRecv = new OVERLAPPED_EX(pktBufferConfig, OP_TYPE::RECV);
-		m_pOverlappedSend = new OVERLAPPED_EX(pktBufferConfig, OP_TYPE::SEND);
+		m_pOverlappedRecv = new OVERLAPPED_EX(packetBufferConfig, OP_TYPE::RECV);
+		m_pOverlappedSend = new OVERLAPPED_EX(packetBufferConfig, OP_TYPE::SEND);
 		m_pOverlappedConn = new OVERLAPPED_EX();
 		m_RefCount.store(0);
 		m_IsOpened.store(false);
-
-		m_SessionDesc.m_pPacketBuffer->Init(pktBufferConfig);
 	}
 	~SESSION()
 	{
@@ -46,6 +44,16 @@ public:
 	void SetSessionId(INT id)
 	{
 		m_SessionDesc.id = id;
+	}
+
+	void Clear()
+	{
+		m_SocketId = 0;
+		m_RefCount.store(0);
+		m_IsOpened.store(false);
+		m_pOverlappedConn->Clear();
+		m_pOverlappedRecv->Clear();
+		m_pOverlappedSend->Clear();
 	}
 
 	INT GetSessionId()
