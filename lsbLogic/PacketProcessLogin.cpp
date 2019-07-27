@@ -28,6 +28,7 @@ namespace lsbLogic
 
 		m_pConnectedUserManager->SetLogin(packet.SessionId);
 		
+		m_Log->Write(LV::DEBUG, "%s | Login. id : %s, session Id : %d", __FUNCTION__, reqPkt->szID, packet.SessionId);
 		resPkt.SetErrorCode(err);
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data);
 
@@ -64,6 +65,7 @@ namespace lsbLogic
 
 		m_pConnectedUserManager->SetDisConnectSession(packet.SessionId);
 
+		m_Log->Write(LV::DEBUG, "%s | Logout. session id : %d", __FUNCTION__, packet.SessionId);
 		resPkt.SetErrorCode(err);
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data);
 

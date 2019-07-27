@@ -50,7 +50,7 @@ namespace lsbLogic
 	ERROR_CODE PacketProcess::NtfSysConnctSession(PacketInfo packet)
 	{
 		m_pConnectedUserManager->SetConnectSession(packet.SessionId);
-		m_Log->Write(LOG_LEVEL::INFO, "%s | ConnectSesson. sessionId(%d)", __FUNCTION__, packet.SessionId);
+		m_Log->Write(LV::INFO, "%s | ConnectSesson. sessionId(%d)", __FUNCTION__, packet.SessionId);
 
 		return ERROR_CODE::NONE;
 	}
@@ -68,15 +68,17 @@ namespace lsbLogic
 				pRoom->LeaveUser(pUser->GetIndex());
 				pRoom->NotifyLeaveUserInfo(pUser->GetIndex());
 					
-				m_Log->Write(LOG_LEVEL::INFO, "%s | NtfSysCloseSesson. sessionIndex(%d). Room Out", __FUNCTION__, packet.SessionId);
+				m_Log->Write(LV::DEBUG, "%s | CloseSesson. Room Out %u", __FUNCTION__, pRoom->GetIndex());
 			}
 
 			m_pUserMngr->RemoveUser(packet.SessionId);
+
+			m_Log->Write(LV::DEBUG, "%s | CloseSesson. User logout %u", __FUNCTION__, pUser->GetIndex());
 		}
 
 		m_pConnectedUserManager->SetDisConnectSession(packet.SessionId);
 
-		m_Log->Write(LOG_LEVEL::INFO, "%s | CloseSesson. sessionIndex(%d)", __FUNCTION__, packet.SessionId);
+		m_Log->Write(LV::INFO, "%s | CloseSesson. sessionIndex(%d)", __FUNCTION__, packet.SessionId);
 		return ERROR_CODE::NONE;
 	}
 
