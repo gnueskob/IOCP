@@ -51,6 +51,8 @@
             this.idLabel = new System.Windows.Forms.Label();
             this.idText = new System.Windows.Forms.TextBox();
             this.RoomInfo = new System.Windows.Forms.GroupBox();
+            this.btnChat = new System.Windows.Forms.Button();
+            this.chat = new System.Windows.Forms.TextBox();
             this.curRoomNumberLabel = new System.Windows.Forms.Label();
             this.roomLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -65,8 +67,6 @@
             this.userListLabel = new System.Windows.Forms.Label();
             this.roomNumberLabel = new System.Windows.Forms.Label();
             this.roomNumber = new System.Windows.Forms.TextBox();
-            this.chat = new System.Windows.Forms.TextBox();
-            this.btnChat = new System.Windows.Forms.Button();
             this.serverInfoBox.SuspendLayout();
             this.logMsgBox.SuspendLayout();
             this.LoginInfo.SuspendLayout();
@@ -260,6 +260,7 @@
             this.btnLogout.TabIndex = 11;
             this.btnLogout.Text = "Logout";
             this.btnLogout.UseVisualStyleBackColor = true;
+            this.btnLogout.Click += new System.EventHandler(this.BtnLogout_Click);
             // 
             // btnLogin
             // 
@@ -335,6 +336,26 @@
             this.RoomInfo.TabIndex = 11;
             this.RoomInfo.TabStop = false;
             this.RoomInfo.Text = "Room";
+            // 
+            // btnChat
+            // 
+            this.btnChat.Font = new System.Drawing.Font("Consolas", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnChat.Location = new System.Drawing.Point(542, 353);
+            this.btnChat.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.btnChat.Name = "btnChat";
+            this.btnChat.Size = new System.Drawing.Size(58, 33);
+            this.btnChat.TabIndex = 22;
+            this.btnChat.Text = "Chat";
+            this.btnChat.UseVisualStyleBackColor = true;
+            this.btnChat.Click += new System.EventHandler(this.BtnChat_Click);
+            // 
+            // chat
+            // 
+            this.chat.Font = new System.Drawing.Font("Consolas", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chat.Location = new System.Drawing.Point(192, 355);
+            this.chat.Name = "chat";
+            this.chat.Size = new System.Drawing.Size(343, 29);
+            this.chat.TabIndex = 21;
             // 
             // curRoomNumberLabel
             // 
@@ -474,26 +495,6 @@
             this.roomNumber.Size = new System.Drawing.Size(55, 29);
             this.roomNumber.TabIndex = 2;
             this.roomNumber.Text = "0";
-            // 
-            // chat
-            // 
-            this.chat.Font = new System.Drawing.Font("Consolas", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chat.Location = new System.Drawing.Point(192, 355);
-            this.chat.Name = "chat";
-            this.chat.Size = new System.Drawing.Size(343, 29);
-            this.chat.TabIndex = 21;
-            // 
-            // btnChat
-            // 
-            this.btnChat.Font = new System.Drawing.Font("Consolas", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnChat.Location = new System.Drawing.Point(542, 353);
-            this.btnChat.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
-            this.btnChat.Name = "btnChat";
-            this.btnChat.Size = new System.Drawing.Size(58, 33);
-            this.btnChat.TabIndex = 22;
-            this.btnChat.Text = "Chat";
-            this.btnChat.UseVisualStyleBackColor = true;
-            this.btnChat.Click += new System.EventHandler(this.BtnChat_Click);
             // 
             // client
             // 

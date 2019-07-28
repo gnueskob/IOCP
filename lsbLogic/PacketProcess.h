@@ -19,11 +19,9 @@ namespace lsbLogic
 		PacketFunc PacketFuncArray[static_cast<int>(PACKET_ID::MAX)];
 
 	public:
-		void Init(
-			LogicMain* const m_pLogicMain
+		void Init(LogicMain* const m_pLogicMain
 			, UserManager* const pUserMngr
 			, RoomManager* const pConfig
-			, ServerConfig serverConfig
 			, ConnectedUserManager* pConnUsrMngr
 			, Log* const pLogger);
 
@@ -36,7 +34,6 @@ namespace lsbLogic
 		UserManager* m_pUserMngr;
 		RoomManager* m_pRoomMngr;
 		ConnectedUserManager* m_pConnectedUserManager;
-		ServerConfig m_ServerConfig;
 
 	private:
 		ERROR_CODE NtfSysConnctSession(PacketInfo packetInfo);

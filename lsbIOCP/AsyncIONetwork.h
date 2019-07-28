@@ -19,7 +19,7 @@ class AsyncIONetwork : public INetworkController
 {
 public:
 	AsyncIONetwork() = delete;
-	AsyncIONetwork(INetworkReceiver* const pReceiver, ServerConfig config);
+	AsyncIONetwork(INetworkReceiver* const pReceiver, NetworkConfig config);
 	~AsyncIONetwork();
 	void Start();
 	void Stop();

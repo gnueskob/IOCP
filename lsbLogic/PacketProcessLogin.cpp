@@ -63,7 +63,7 @@ namespace lsbLogic
 
 		m_pUserMngr->RemoveUser(packet.SessionId);
 
-		m_pConnectedUserManager->SetDisConnectSession(packet.SessionId);
+		m_pConnectedUserManager->SetLogout(packet.SessionId);
 
 		m_Log->Write(LV::DEBUG, "%s | Logout. session id : %d", __FUNCTION__, packet.SessionId);
 		resPkt.SetErrorCode(err);

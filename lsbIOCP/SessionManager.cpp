@@ -3,14 +3,8 @@
 // Constructor of SessionManager
 // Create session object pool ( [sessionNum] sessions )
 // Set unique id of each session and push id to concurrent_queue (session id queue)
-SessionManager::SessionManager(
-	const int sessionNum
-	, SessionConfig sessionConfig
-	, PacketBufferConfig pktBufferConfig
-	, Log* const pLog)
-	: m_SessionNumber(sessionNum)
-	, m_IOBufMaxSize(sessionConfig.ioBufMaxSize)
-	, m_pLogger(pLog)
+SessionManager::SessionManager(const int sessionNum, const PacketBufferConfig pktBufferConfig, Log* const pLog)
+	: m_SessionNumber(sessionNum), m_IOBufMaxSize(pktBufferConfig.bufferSize), m_pLogger(pLog)
 {
 
 	m_ConnectedSessionNumber.store(0);
@@ -18,7 +12,7 @@ SessionManager::SessionManager(
 	m_SessionPool.assign(sessionNum, nullptr);
 	for (auto& session : m_SessionPool)
 	{
-		session = new SESSION(sessionConfig, pktBufferConfig);
+		session = new SESSION(pktBufferConfig);
 		session->SetSessionId(sessionId);
 		m_SessionIdPool.push(sessionId++);
 	}
@@ -47,12 +41,6 @@ void SessionManager::returnId(int sessionId)
 {
 	m_ConnectedSessionNumber--;
 	m_SessionIdPool.push(sessionId);
-}
-
-// Get session descriptor of session id
-SESSIONDESC& SessionManager::GetSessionDescRef(int sessionId)
-{
-	return m_SessionPool.at(sessionId)->GetSessionDescRef();
 }
 
 // SESSION has atomic member values, so they can not use &(ref) constructor

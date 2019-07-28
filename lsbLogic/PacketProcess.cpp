@@ -5,14 +5,12 @@ namespace lsbLogic
 	void PacketProcess::Init(LogicMain* const pLogicMain
 		, UserManager* const pUserMngr
 		, RoomManager* const pRoomMngr
-		, ServerConfig serverConfig
 		, ConnectedUserManager* pConnUsrMngr
 		, Log* const pLogger)
 	{
 		m_pLogicMain = pLogicMain;
 		m_pUserMngr = pUserMngr;
 		m_pRoomMngr = pRoomMngr;
-		m_ServerConfig = serverConfig;
 		m_pConnectedUserManager = pConnUsrMngr;
 		m_Log = pLogger;
 
@@ -24,6 +22,7 @@ namespace lsbLogic
 		PacketFuncArray[static_cast<int>(PACKET_ID::NTF_SYS_CONNECT_SESSION)] = &PacketProcess::NtfSysConnctSession;
 		PacketFuncArray[static_cast<int>(PACKET_ID::NTF_SYS_CLOSE_SESSION)] = &PacketProcess::NtfSysCloseSession;
 		PacketFuncArray[static_cast<int>(PACKET_ID::LOGIN_REQ)] = &PacketProcess::Login;
+		PacketFuncArray[static_cast<int>(PACKET_ID::LOGOUT_REQ)] = &PacketProcess::Logout;
 		PacketFuncArray[static_cast<int>(PACKET_ID::ROOM_ENTER_REQ)] = &PacketProcess::RoomEnter;
 		PacketFuncArray[static_cast<int>(PACKET_ID::ROOM_LEAVE_REQ)] = &PacketProcess::RoomLeave;
 		PacketFuncArray[static_cast<int>(PACKET_ID::ROOM_CHAT_REQ)] = &PacketProcess::RoomChat;

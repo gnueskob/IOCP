@@ -365,6 +365,7 @@ namespace echoClient_csharp
             curRoomNumberLabel.Text = "";
             userList.Items.Clear();
             chatLog.Items.Clear();
+            chat.Text = "";
         }
 
         private void BtnLogin_Click(object sender, EventArgs e)
@@ -426,6 +427,12 @@ namespace echoClient_csharp
 
             PostSendPacket(PACKET_ID.PACKET_ID_ROOM_CHAT_REQ, requestPkt.ToBytes());
             Log.Write($"방 채팅 요청");
+        }
+
+        private void BtnLogout_Click(object sender, EventArgs e)
+        {
+            PostSendPacket(PACKET_ID.PACKET_ID_LOGOUT_REQ, null);
+            Log.Write($"로그아웃 요청");
         }
     }
 }

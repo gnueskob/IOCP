@@ -5,44 +5,29 @@
 
 int main()
 {
-	const INT threadNumber = 2;
-
-	const INT sessionNumber = 1000;
-	const INT ioMaxSize = 2048;
-
-	const int bufferSize = 1024;
-	const int headerSize = 5;
+	constexpr int threadNumber = 2;
+	constexpr int sessionNumber = 1000;
+	constexpr int bufferSize = 1024;
 
 	const char* const ip = "127.0.0.1";
-	const u_short port = 23452;
+	const short port = 23452;
 	const std::string name = "SampleServer";
 
-	ServerConfig config =
+	const short maxUserNum = 800;
+	const short maxRoomNum = 100;
+
+	lsbLogic::LogicConfig config =
 	{
 		threadNumber,
-
 		sessionNumber,
-		ioMaxSize,
-
 		bufferSize,
-		headerSize,
-		0,
-
 		ip, port, name,
-	};
-
-	const int maxUserNum = 700;
-	const int maxRoomNum = 100;
-
-	lsbLogic::LogicConfig lconfig =
-	{
 		maxUserNum,
 		maxRoomNum,
-		0,
 	};
 
 	lsbLogic::LogicMain myServer;
-	myServer.Init(config, lconfig);
+	myServer.Init(config);
 	myServer.Start();
 
 	std::thread logicThread([&]()

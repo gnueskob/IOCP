@@ -52,6 +52,11 @@ namespace lsbLogic
 			ConnectedUserList[sessionIndex].Clear();
 		}
 
+		void SetLogout(const int sessionIndex)
+		{
+			ConnectedUserList[sessionIndex].m_IsLoginSuccess = false;
+		}
+
 		// TODO: 따로 스레드를 돌리되 처리할 내용이 있으면
 		// 패킷 큐를 이용해서 패킷 처리 스레드에게 넘기기
 		void LoginCheck()

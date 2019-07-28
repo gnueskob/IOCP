@@ -13,16 +13,12 @@ class SessionManager
 {
 public:
 	SessionManager() = delete;
-	SessionManager(const int sessionNum
-		, SessionConfig sessionConfig
-		, PacketBufferConfig pktBufferConfig
-		, Log* const pLog);
+	SessionManager(const int sessionNum, const PacketBufferConfig pktBufferConfig, Log* const pLog);
 	~SessionManager();
 
 	bool retrieveId(int& _out_sessionId);
 	void returnId(int sessionId);
 
-	SESSIONDESC& GetSessionDescRef(int sessionId);
 	SESSION* GetSessionPtr(int sessionId);
 
 	NET_ERROR_CODE PostRecv(SESSION* session);

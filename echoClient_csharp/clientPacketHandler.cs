@@ -13,6 +13,7 @@ namespace echoClient_csharp
             PacketFuncDic.Add(PACKET_ID.PACKET_ID_ECHO_RES, PacketProcess_Echo);
             PacketFuncDic.Add(PACKET_ID.PACKET_ID_ERROR_NTF, PacketProcess_ErrorNotify);
             PacketFuncDic.Add(PACKET_ID.PACKET_ID_LOGIN_RES, PacketProcess_LoginResponse);
+            PacketFuncDic.Add(PACKET_ID.PACKET_ID_LOGOUT_RES, PacketProcess_LogoutResponse);
             PacketFuncDic.Add(PACKET_ID.PACKET_ID_ROOM_ENTER_RES, PacketProcess_RoomEnterResponse);
             PacketFuncDic.Add(PACKET_ID.PACKET_ID_ROOM_ENTER_NEW_USER_NTF, PacketProcess_RoomNewUserNotify);
             PacketFuncDic.Add(PACKET_ID.PACKET_ID_ROOM_USER_LIST_NTF, PacketProcess_RoomUserListNotify);
@@ -66,6 +67,24 @@ namespace echoClient_csharp
                 btnEnter.Enabled = true;
                 btnLeave.Enabled = false;
                 btnCreate.Enabled = true;
+            }
+        }
+
+        void PacketProcess_LogoutResponse(byte[] bodyData)
+        {
+            var responsePkt = new LogoutResPacket();
+            responsePkt.FromBytes(bodyData);
+
+            Log.Write($"로그아웃 결과: {(ERROR_CODE)responsePkt.Result}");
+
+            if ((ERROR_CODE)responsePkt.Result == ERROR_CODE.ERROR_NONE)
+            {
+                btnLogin.Enabled = true;
+                btnLogout.Enabled = false;
+                btnEnter.Enabled = false;
+                btnLeave.Enabled = false;
+                btnCreate.Enabled = false;
+                ClearRoomInfo();
             }
         }
 

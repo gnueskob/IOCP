@@ -155,7 +155,7 @@
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />
     <ClInclude Include="PacketBufferManager.h" />
-    <ClInclude Include="Struct.h" />
+    <ClInclude Include="Define.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Worker.h" />

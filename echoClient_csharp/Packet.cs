@@ -150,6 +150,22 @@ namespace echoClient_csharp
         }
     }
 
+    // Logout
+    public class LogoutReqPacket
+    {
+    }
+
+    public class LogoutResPacket
+    {
+        public Int16 Result;
+
+        public bool FromBytes(byte[] bodyData)
+        {
+            Result = BitConverter.ToInt16(bodyData, 0);
+            return true;
+        }
+    }
+
     public class RoomEnterReqPacket
     {
         bool IsCreate;

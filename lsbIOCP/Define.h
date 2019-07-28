@@ -8,22 +8,21 @@
 
 #include "PacketBufferManager.h"
 
-struct ServerConfig
+struct NetworkConfig
 {
-	INT threadNumber;
-
-	INT sessionNumber;
-	INT ioMaxSize;
+	int threadNumber;
+	int sessionNumber;
 
 	int bufferSize;
 	int headerSize;
 	int maxPacketSize;
 
 	const char* ip;
-	u_short port;
+	short port;
 	std::string name;
 };
 
+/***********************************************************************************************************/
 
 enum OP_TYPE { RECV, SEND, CONN };
 
@@ -58,33 +57,3 @@ public:
 };
 
 /***********************************************************************************************************/
-
-class INetworkController;
-// Session descriptor (used in receiver)
-// Users manipluate only this, when they need session information
-class SESSIONDESC
-{
-public:
-	SESSIONDESC() 
-	{ 
-		ZeroMemory(&tick, sizeof(tick));
-		m_pPacketBuffer = new PacketBufferManager();
-	};
-	SESSIONDESC(INetworkController* pCrtl) : pController(pCrtl) 
-	{
-		ZeroMemory(&tick, sizeof(tick));
-		m_pPacketBuffer = new PacketBufferManager();
-	}
-
-	bool CheckTick(SESSIONDESC& desc) const 
-	{
-		return this->tick.QuadPart == desc.tick.QuadPart; 
-	}
-
-public:
-	INT				id = -1;
-	LARGE_INTEGER	tick;
-	INetworkController* pController = nullptr;
-
-	PacketBufferManager* m_pPacketBuffer;
-};

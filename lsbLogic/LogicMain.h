@@ -2,7 +2,7 @@
 
 #include <concurrent_queue.h>
 
-#include "../lsbIOCP/Struct.h"
+#include "../lsbIOCP/Define.h"
 
 #include "Packet.h"
 #include "LogicConfig.h"
@@ -20,15 +20,12 @@ namespace lsbLogic
 	class LogicMain : public INetworkReceiver
 	{
 	public:
-		ServerConfig m_Config;
-
-	public:
 		void Start();
 		void Stop();
 		void Run();
 
 		// Manager pointer
-		void Init(ServerConfig m_SConfig, LogicConfig m_LConfig);
+		void Init(LogicConfig m_Config);
 
 		void SendMsg(const int sessionId, const short packetId, const short length, char* data);
 		void ForceClose(const int sessionId);
@@ -55,13 +52,12 @@ namespace lsbLogic
 		ConnectedUserManager* m_pConnUserMngr;
 		PacketProcess* m_pPktProc;
 
-		ServerConfig m_SConfig;
-		LogicConfig m_LConfig;
+		LogicConfig m_Config;
 
 		bool m_IsRun = false;
 
 		Concurrency::concurrent_queue<PacketInfo> m_PacketQueue;
 
-		Log* m_Log;
+		Log* m_pLogger;
 	};
 }

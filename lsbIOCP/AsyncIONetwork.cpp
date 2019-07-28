@@ -1,6 +1,6 @@
 #include "AsyncIONetwork.h"
 
-AsyncIONetwork::AsyncIONetwork(INetworkReceiver* const pReceiver, ServerConfig config)
+AsyncIONetwork::AsyncIONetwork(INetworkReceiver* const pReceiver, NetworkConfig config)
 	: m_pReceiver(pReceiver), m_IOCPHandle(INVALID_HANDLE_VALUE), m_Log(new Log())
 {
 	auto file = std::string("");
@@ -17,8 +17,8 @@ AsyncIONetwork::AsyncIONetwork(INetworkReceiver* const pReceiver, ServerConfig c
 	// m_Log->Init(LOG_LEVEL::DEBUG, m_ServerName);
 
 	// Config conditions
-	ThrowErrorIf(config.ioMaxSize <= 0, WSAEMSGSIZE, "Buffer size is invalid");
 	ThrowErrorIf(pReceiver == nullptr, WSAEINVAL, "Receiver nullptr");
+	ThrowErrorIf(config.bufferSize <= 0, WSAEMSGSIZE, "Buffer size is invalid");
 	ThrowErrorIf(config.threadNumber < 1, WSAEINVAL, "Thread number must over than 0");
 
 	// Create IOCP
@@ -27,13 +27,12 @@ AsyncIONetwork::AsyncIONetwork(INetworkReceiver* const pReceiver, ServerConfig c
 	m_Log->Write(LV::DEBUG, "Create IOCP succesfully");
 
 	// Initialize Session Manager (session pool, session id pool etc..)
-	SessionConfig sessionConfig = { config.ioMaxSize, this };
 	PacketBufferConfig pktBufferConfig = { config.bufferSize, config.headerSize, config.maxPacketSize };
-	m_pSessionManager = new SessionManager(config.sessionNumber, sessionConfig, pktBufferConfig, m_Log);
+	m_pSessionManager = new SessionManager(config.sessionNumber, pktBufferConfig, m_Log);
 	m_Log->Write(LV::DEBUG, "Create Session manager succesfully");
 
 	// Initialize Worker threads
-	for (INT i = 0; i < config.threadNumber; i++)
+	for (int i = 0; i < config.threadNumber; i++)
 	{
 		m_Workers.push_back(std::make_shared<Worker>(pReceiver, m_IOCPHandle, m_pSessionManager, this, m_Log));
 	}

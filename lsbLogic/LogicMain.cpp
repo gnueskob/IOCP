@@ -22,7 +22,7 @@ namespace lsbLogic
 
 	void LogicMain::Run()
 	{
-		m_Log->Write(LV::TRACE, "%s | Run packet proc", __FUNCTION__);
+		m_pLogger->Write(LV::TRACE, "%s | Run packet proc", __FUNCTION__);
 		while (m_IsRun)
 		{
 			PacketInfo packetInfo;
@@ -34,56 +34,65 @@ namespace lsbLogic
 
 			m_pPktProc->Process(packetInfo);
 		}
-		m_Log->Write(LV::TRACE, "%s | Exit packet proc", __FUNCTION__);
+		m_pLogger->Write(LV::TRACE, "%s | Exit packet proc", __FUNCTION__);
 	}
 
-	void LogicMain::Init(ServerConfig serverConfig, LogicConfig logicConfig)
+	void LogicMain::Init(LogicConfig config)
 	{
-		m_SConfig = serverConfig;
-		m_LConfig = logicConfig;
+		m_Config = config;
 
-		serverConfig.maxPacketSize = PACKET_MAX_SIZE;
-		logicConfig.maxUserNumInRoom = MAX_ROOM_USER_COUNT;
+		NetworkConfig networkConfig =
+		{
+			config.threadNumber,
+			config.sessionNumber,
+			config.bufferSize,
+			PACKET_HEADER_SIZE,
+			PACKET_MAX_SIZE,
+			config.ip,
+			config.port,
+			config.name
+		};
 
-		m_pNetwork = new AsyncIONetwork(this, serverConfig);
-		
-		m_Log = new Log();
+		m_pNetwork = new AsyncIONetwork(this, networkConfig);
+
+		m_pLogger = new Log();
 		auto file = std::string("tempLog");
-		m_Log->Init(LV::DEBUG, file);
+		m_pLogger->Init(LV::DEBUG, file);
 
 		m_pUserMngr = new UserManager();
-		m_pUserMngr->Init(logicConfig.maxUserNum);
+		m_pUserMngr->Init(m_Config.maxUserNum);
 
 		m_pRoomMngr = new RoomManager();
-		m_pRoomMngr->Init(this, logicConfig.maxRoomNum, m_Log);
+		m_pRoomMngr->Init(this, m_Config.maxRoomNum, m_pLogger);
 
 		m_pConnUserMngr = new ConnectedUserManager();
-		m_pConnUserMngr->Init(m_pNetwork, serverConfig.sessionNumber, true, m_Log);
+		m_pConnUserMngr->Init(m_pNetwork, m_Config.sessionNumber, true, m_pLogger);
 
 		m_pPktProc = new PacketProcess();
-		m_pPktProc->Init(this, m_pUserMngr, m_pRoomMngr, serverConfig, m_pConnUserMngr, m_Log);
+		m_pPktProc->Init(this, m_pUserMngr, m_pRoomMngr, m_pConnUserMngr, m_pLogger);
 
-		m_Log->Write(LOG_LEVEL::INFO, "%s | Init Success", __FUNCTION__);
+		m_pLogger->Write(LOG_LEVEL::INFO, "%s | Init Success", __FUNCTION__);
 	}
 
 	void LogicMain::SendMsg(const int sessionId, const short packetId, const short length, char* data)
 	{
+		// TODO: packet header를 각 res packet에 상속시켜 사용 -> Write 두번 할 필요가 없어짐
 		auto totalSize = static_cast<short>(PACKET_HEADER_SIZE + length);
 		PacketHeader header{ totalSize, packetId, static_cast<unsigned char>(0) };
-		m_Log->Write(LV::DEBUG, "%s | packet size : %u, packet id : %u, body length %u", __FUNCTION__, totalSize, packetId, length);
+		m_pLogger->Write(LV::DEBUG, "%s | packet size : %u, packet id : %u, body length %u", __FUNCTION__, totalSize, packetId, length);
 		m_pNetwork->SendPacket(sessionId, length, data, PACKET_HEADER_SIZE, reinterpret_cast<char*>(&header));
-		m_Log->Write(LV::TRACE, "%s | Send Packet", __FUNCTION__);
+		m_pLogger->Write(LV::TRACE, "%s | Send Packet", __FUNCTION__);
 	}
 
 	void LogicMain::ForceClose(const int sessionId)
 	{
 		m_pNetwork->DisconnectSocket(sessionId);
-		m_Log->Write(LV::TRACE, "%s | Close connection", __FUNCTION__);
+		m_pLogger->Write(LV::TRACE, "%s | Close connection", __FUNCTION__);
 	}
 
 	void LogicMain::ConnectServer(const int reqId, const char* ip, unsigned short port)
 	{
 		m_pNetwork->ConnectSocket(reqId, ip, port);
-		m_Log->Write(LV::TRACE, "%s | Request connection to server %s - %u", __FUNCTION__, ip, port);
+		m_pLogger->Write(LV::TRACE, "%s | Request connection to server %s - %u", __FUNCTION__, ip, port);
 	}
 }
