@@ -1,6 +1,6 @@
 #include "AsyncIONetwork.h"
 
-AsyncIONetwork::AsyncIONetwork(IServerReceiver* const pReceiver, ServerConfig config)
+AsyncIONetwork::AsyncIONetwork(INetworkReceiver* const pReceiver, ServerConfig config)
 	: m_pReceiver(pReceiver), m_IOCPHandle(INVALID_HANDLE_VALUE), m_Log(new Log())
 {
 	auto file = std::string("");
@@ -80,15 +80,19 @@ void AsyncIONetwork::Join()
 }
 
 // Apply socket id to available session
-// Warning : not yet opend socket flag
-SESSION* AsyncIONetwork::LinkSocketToSession(SOCKET clientSocket)
+// Warning : not yet opened socket flag
+SESSION* AsyncIONetwork::LinkSocketToSession(const SOCKET clientSocket)
 {
 	// Get available session id from 'session id pool' (concurrent queue)
-	INT sessionId;
-	if (m_pSessionManager->retrieveId(sessionId) == false) return nullptr;
+	int sessionId;
+	if (m_pSessionManager->retrieveId(sessionId) == false)
+	{
+		m_Log->Write(LV::WARN, "Can not retrieve Session");
+		return nullptr;
+	}
 
-	// Link this session socket with client socket
 	auto pSession = m_pSessionManager->GetSessionPtr(sessionId);
+	// Initialize session info
 	pSession->Clear();
 
 	// Add this socket to current IOCP handle using session id as completion key
@@ -103,64 +107,70 @@ SESSION* AsyncIONetwork::LinkSocketToSession(SOCKET clientSocket)
 		// If fail to add client socket to iocp handle,
 		// return current session id to 'session id pool'
 		m_pSessionManager->returnId(sessionId);
+		m_Log->Write(LV::WARN, "Can not link client socket to completion port");
 		return nullptr;
 	}
 
+	// Link this session socket with client socket
 	pSession->SetSocket(clientSocket);
 
-	m_Log->Write(LV::INFO, "[session #%u] Socket added to session", sessionId);
+	m_Log->Write(LV::INFO, "[session #%d] Socket added to session", sessionId);
 
 	return pSession;
 }
 
 // Register already accepted client socket to server
 // Then, notify to server the result and post receive
-DWORD AsyncIONetwork::RegisterClient(SOCKET clientSocket)
+NET_ERROR_CODE AsyncIONetwork::RegisterClient(const SOCKET clientSocket)
 {
 	// Apply socket id to available session
 	auto pSession = LinkSocketToSession(clientSocket);
-	if (pSession == nullptr) return WSAENOBUFS; // TODO: error
-
-	// Socket is already accepted by accept() func.
-	// So, set open flag
-	pSession->Open();
-
-	// Notify to server that client socket successfully connected with session descriptor
-	m_pReceiver->NotifyClientConnected(pSession->GetSessionDescRef());
-
-	// Post receive IOCP job
-	auto error = m_pSessionManager->PostRecv(pSession);
-	if (error != FALSE) {
-		m_Log->Write(LV::ERR, "[Error %u] PostRecv failed", error);
-		UnlinkSocketToSession(pSession->GetSessionId(), error);
+	if (pSession == nullptr)
+	{
+		return NET_ERROR_CODE::FAIL_LINK_SOCKET_TO_SESSION;
 	}
 
-	return 0;
+	// Notify to server that client socket successfully connected with session descriptor
+	m_pReceiver->NotifyClientConnected(pSession->GetSessionId());
+
+	// Socket is already accepted by accept() func. Set open flag
+	if (pSession->Open() == false)
+	{
+		// If session is already opened, something wrong
+		UnlinkSocketToSession(pSession->GetSessionId(), NET_ERROR_CODE::INVALID_SESSION);
+	}
+
+	// Post receive IOCP job
+	auto ret = m_pSessionManager->PostRecv(pSession);
+	if (ret != NET_ERROR_CODE::NONE) {
+		m_Log->Write(LV::ERR, "[NET_ERROR #%d] PostRecv failed", ret);
+		UnlinkSocketToSession(pSession->GetSessionId(), ret);
+		return ret;
+	}
+
+	return NET_ERROR_CODE::NONE;
 }
 
 // Release current session id & close the socket if possible
-DWORD AsyncIONetwork::UnlinkSocketToSession(INT sessionId, DWORD error)
+void AsyncIONetwork::UnlinkSocketToSession(const int sessionId, const NET_ERROR_CODE error)
 {
 	auto pSession = m_pSessionManager->GetSessionPtr(sessionId);
 
 	// Check this session is already closed, if not close socket
 	if (pSession->Close())
 	{
+		pSession->SetSocket(INVALID_SOCKET);
 		closesocket(pSession->GetSocket());
+
 		m_Log->Write(LV::DEBUG, "Socket closed %d", pSession->GetSocket());
 		m_pReceiver->NotifyClientDisconnected(pSession->GetSessionId());
 	}
 
-	// Initialize session socket
-	pSession->SetSocket(INVALID_SOCKET);
-
 	// Return session id to session id pool
 	m_pSessionManager->returnId(sessionId);
 
-	if (error == FALSE)
-		m_Log->Write(LV::INFO, "[session #%u] Release Sokcet", sessionId);
+	if (error == NET_ERROR_CODE::NONE)
+		m_Log->Write(LV::INFO, "[Session #%d] Release Sokcet", sessionId);
 	else
-		m_Log->Write(LV::ERR, "[session #%u] Release Sokcet by Error #%d", sessionId, error);
-
-	return 0;
+		m_Log->Write(LV::ERR, "[NET_ERROR #%d] [Session #%d] Release Sokcet by Error", error, sessionId);
 }

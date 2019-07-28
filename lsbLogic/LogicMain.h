@@ -17,7 +17,7 @@ namespace lsbLogic
 	class ConnectedUserManager;
 	class PacketProcess;
 
-	class LogicMain : public IServerReceiver
+	class LogicMain : public INetworkReceiver
 	{
 	public:
 		ServerConfig m_Config;
@@ -35,18 +35,18 @@ namespace lsbLogic
 		void ConnectServer(const int reqId, const char* ip, unsigned short port);
 
 	private:
-		/**************************************** IServerReceiver ****************************************/
+		/**************************************** INetworkReceiver ****************************************/
 		// Triggered when client socket is connected
-		void NotifyClientConnected(SESSIONDESC& sessionDesc) override;
+		void NotifyClientConnected(const int sessionId) override;
 
 		// Triggered when socket is disconnected
-		void NotifyClientDisconnected(INT sessionId) override;
+		void NotifyClientDisconnected(const int sessionId) override;
 
 		// Triggered when server get message from client
-		bool NotifyMessage(SESSIONDESC& sessionDesc, size_t nBytes, char* pData) override;
+		bool NotifyMessage(const int sessionId, const int nBytes, char* const pData) override;
 
 		// Triggered when the job of connecting to other server is completed
-		void NotifyServerConnectingResult(SESSIONDESC& session, INT requrestId, DWORD error) override;
+		void NotifyServerConnectingResult(const int sessionId, const int requrestId, const NET_ERROR_CODE error) override;
 
 	private:
 		AsyncIONetwork* m_pNetwork;

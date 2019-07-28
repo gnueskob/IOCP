@@ -59,7 +59,7 @@ public:
 
 /***********************************************************************************************************/
 
-class IServerController;
+class INetworkController;
 // Session descriptor (used in receiver)
 // Users manipluate only this, when they need session information
 class SESSIONDESC
@@ -70,7 +70,7 @@ public:
 		ZeroMemory(&tick, sizeof(tick));
 		m_pPacketBuffer = new PacketBufferManager();
 	};
-	SESSIONDESC(IServerController* pCrtl) : pController(pCrtl) 
+	SESSIONDESC(INetworkController* pCrtl) : pController(pCrtl) 
 	{
 		ZeroMemory(&tick, sizeof(tick));
 		m_pPacketBuffer = new PacketBufferManager();
@@ -84,7 +84,7 @@ public:
 public:
 	INT				id = -1;
 	LARGE_INTEGER	tick;
-	IServerController* pController = nullptr;
+	INetworkController* pController = nullptr;
 
 	PacketBufferManager* m_pPacketBuffer;
 };

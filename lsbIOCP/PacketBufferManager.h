@@ -4,7 +4,7 @@
 
 #include <functional>
 
-using packetSizeFunc = std::function<int(char*)>;
+#include "AsyncIOException.h"
 
 class PacketBufferConfig
 {
@@ -32,10 +32,11 @@ public:
 
 	bool Init(PacketBufferConfig config)
 	{
-		if (config.bufferSize < (config.maxPacketSize * 2) || config.headerSize < 0 || config.maxPacketSize < 1)
+		if (config.bufferSize < (config.maxPacketSize * 2) 
+			|| config.headerSize < 0 
+			|| config.maxPacketSize < 1)
 		{
-			// TODO: throw
-			return false;
+			ThrowErrorIf(true, WSAENOBUFS, "Packet Buffer size is not sufficient");
 		}
 
 		m_PrevReadPos = 0;
@@ -60,9 +61,9 @@ public:
 	// and increase write pointer in packet buffer to write data at that time
 	bool Write(char* pData, int startIndex, int size, bool relocate = true)
 	{
-		if (pData == nullptr)
+		if (pData == nullptr || size == 0)
 		{
-			return false;
+			return true;
 		}
 
 		int remainingBufferSize = m_BufferSize;
@@ -165,11 +166,6 @@ public:
 		return true;
 	}
 
-	char* ReadCurret()
-	{
-		return m_pPacketData + m_ReadPos;
-	}
-
 	char* WriteCurrent()
 	{
 		return m_pPacketData + m_WritePos;
@@ -179,26 +175,6 @@ public:
 	int MaxWriteLegnth()
 	{
 		return m_MaxPacketSize;
-	}
-
-	int ReablableLength()
-	{
-		return m_WritePos - m_ReadPos;
-	}
-
-	// If write pointer is close to end (i.e., packet buffer is nearly full),
-	// pull foward pakcet data on the portion of buffer that alredy read
-	void PreventBufferOverflow()
-	{
-		// Data size that can be read
-		int readableSize = m_WritePos - m_ReadPos;
-		int WritableSize = m_BufferSize - m_WritePos;
-		if (WritableSize < m_MaxPacketSize)
-		{
-			memmove_s(m_pPacketData, m_BufferSize, m_pPacketData + m_ReadPos, readableSize);
-			m_ReadPos = 0;
-			m_WritePos = readableSize;
-		}
 	}
 
 protected:
@@ -211,30 +187,3 @@ protected:
 	int		m_HeaderSize = 0;
 	int		m_MaxPacketSize = 0;
 };
-
-// Function for getting size of packet in header
-// Because packet and header structure is decided by user,
-// the way getting packet size should be decided by user too.
-// ---
-// Example of GetPacketSize function
-// when using first 4-bytes int of packet as entire packet size
-/*
-int GetPakcetSize(char* packet)
-{
-	int size = *BytesToType<int>(packet);
-	return size;
-}
-*/
-
-// Bit converter
-template<typename T>
-T* BytesToType(char* const pBytes, const int index = 0)
-{
-	return reinterpret_cast<T*>(pBytes + index);
-}
-
-template<typename T>
-char* TypeToBytes(T* const pData)
-{
-	return reinterpret_cast<char*>(pData);
-}

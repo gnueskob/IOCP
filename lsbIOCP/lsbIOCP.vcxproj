@@ -150,7 +150,7 @@
     <ClInclude Include="conmanip.h" />
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="ILog.h" />
-    <ClInclude Include="IServer.h" />
+    <ClInclude Include="INetwork.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />

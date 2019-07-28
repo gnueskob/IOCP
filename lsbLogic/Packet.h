@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//lsbIOCP/IServer.h"
+#include "..//lsbIOCP/INetwork.h"
 
 #include "PacketID.h"
 #include "ErrorCode.h"

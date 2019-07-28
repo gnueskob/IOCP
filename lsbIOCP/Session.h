@@ -7,7 +7,7 @@ class SessionConfig
 {
 public:
 	INT ioBufMaxSize;
-	IServerController* pController;
+	INetworkController* pController;
 };
 
 // Session struct including Session descriptor
@@ -36,7 +36,7 @@ public:
 		return m_SocketId;
 	}
 
-	void SetController(IServerController* pController)
+	void SetController(INetworkController* pController)
 	{
 		m_SessionDesc.pController = pController;
 	}

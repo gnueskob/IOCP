@@ -10,38 +10,44 @@
 #include "Worker.h"
 #include "SessionManager.h"
 #include "Acceptor.h"
+#include "ErrorCode.h"
 #include "AsyncIOException.h"
 
 using workers = std::vector<std::shared_ptr<Worker>>;
 
-class AsyncIONetwork : public IServerController
+class AsyncIONetwork : public INetworkController
 {
 public:
 	AsyncIONetwork() = delete;
-	AsyncIONetwork(IServerReceiver* const pReceiver, ServerConfig config);
+	AsyncIONetwork(INetworkReceiver* const pReceiver, ServerConfig config);
 	~AsyncIONetwork();
 	void Start();
 	void Stop();
 	void Join();
 
-	SESSION* LinkSocketToSession(SOCKET clientSocket);
-	DWORD UnlinkSocketToSession(INT sessionId, DWORD error);
-	DWORD RegisterClient(SOCKET clientSocket);
+	SESSION* LinkSocketToSession(const SOCKET clientSocket);
+	void UnlinkSocketToSession(const int sessionId, const NET_ERROR_CODE error);
+	NET_ERROR_CODE RegisterClient(const SOCKET clientSocket);
 
-	// IServerController
-	DWORD SendPacket(const INT sessionId, short length, char* data, short headerLength, char* header) override;
-	DWORD ConnectSocket(INT requestId, const char* ip, u_short port) override;
-	DWORD DisconnectSocket(const INT sessionId) override;
+	// INetworkController
+	NET_ERROR_CODE SendPacket(
+		const int sessionId
+		, const short length
+		, char* const data
+		, const short headerLength
+		, char* const header) override;
+	NET_ERROR_CODE ConnectSocket(const int requestId, const char* ip, const short port) override;
+	void DisconnectSocket(const int sessionId) override;
 
 private:
 	// Handler
-	IServerReceiver*	m_pReceiver;
+	INetworkReceiver*	m_pReceiver;
 	SessionManager*		m_pSessionManager;
 	Acceptor*			m_pAcceptor;
 	HANDLE				m_IOCPHandle;
 
 	// AsyncIONetwork config
-	INT				m_ThreadNum;
+	int				m_ThreadNum;
 	workers			m_Workers;
 	std::string		m_ServerName;
 

@@ -24,7 +24,7 @@ namespace lsbLogic
 	class ConnectedUserManager
 	{
 	public:
-		void Init(IServerController* pController, const int maxSessionCount, bool IsLoginChk, Log* pLogger)
+		void Init(INetworkController* pController, const int maxSessionCount, bool IsLoginChk, Log* pLogger)
 		{
 			m_Log = pLogger;
 			m_pController = pController;
@@ -109,7 +109,7 @@ namespace lsbLogic
 
 	private:
 		ILog* m_Log;
-		IServerController* m_pController;
+		INetworkController* m_pController;
 
 		std::vector<ConnectedUser> ConnectedUserList;
 
