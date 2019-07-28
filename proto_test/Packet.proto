@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lsbProto;
+
+import "PacketHeader.proto";
+
+message Echo {
+  PacketHeader header = 1;
+  string msg = 2;
+}
