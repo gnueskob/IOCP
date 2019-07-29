@@ -34,6 +34,7 @@ public:
 		const int sessionId
 		, const short length
 		, char* const data
+		, Message* pProto
 		, const short headerLength
 		, char* const header) override;
 	NET_ERROR_CODE ConnectSocket(const int requestId, const char* ip, const short port) override;

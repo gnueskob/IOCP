@@ -74,13 +74,13 @@ namespace lsbLogic
 		m_pLogger->Write(LOG_LEVEL::INFO, "%s | Init Success", __FUNCTION__);
 	}
 
-	void LogicMain::SendMsg(const int sessionId, const short packetId, const short length, char* data)
+	void LogicMain::SendMsg(const int sessionId, const short packetId, const short length, char* pData, Message* pMsg)
 	{
 		// TODO: packet header를 각 res packet에 상속시켜 사용 -> Write 두번 할 필요가 없어짐
 		auto totalSize = static_cast<short>(PACKET_HEADER_SIZE + length);
 		PacketHeader header{ totalSize, packetId, static_cast<unsigned char>(0) };
 		m_pLogger->Write(LV::DEBUG, "%s | packet size : %u, packet id : %u, body length %u", __FUNCTION__, totalSize, packetId, length);
-		m_pNetwork->SendPacket(sessionId, length, data, PACKET_HEADER_SIZE, reinterpret_cast<char*>(&header));
+		m_pNetwork->SendPacket(sessionId, length, pData, pMsg, PACKET_HEADER_SIZE, reinterpret_cast<char*>(&header));
 		m_pLogger->Write(LV::TRACE, "%s | Send Packet", __FUNCTION__);
 	}
 

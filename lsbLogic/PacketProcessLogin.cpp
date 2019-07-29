@@ -1,7 +1,7 @@
 #include <tuple>
 
-#include "ErrorCode.h"
-#include "Packet.h"
+#include "Common/ErrorCode.h"
+#include "Common/Packet.h"
 #include "ConnectedUserManager.h"
 #include "User.h"
 #include "UserManager.h"
@@ -22,7 +22,7 @@ namespace lsbLogic
 		if (err != ERROR_CODE::NONE)
 		{
 			resPkt.SetErrorCode(err);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data, nullptr);
 			return err;
 		}
 
@@ -30,7 +30,7 @@ namespace lsbLogic
 		
 		m_Log->Write(LV::DEBUG, "%s | Login. id : %s, session Id : %d", __FUNCTION__, reqPkt->szID, packet.SessionId);
 		resPkt.SetErrorCode(err);
-		m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data);
+		m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data, nullptr);
 
 		return ERROR_CODE::NONE;
 	}
@@ -47,7 +47,7 @@ namespace lsbLogic
 		if (err != ERROR_CODE::NONE)
 		{
 			resPkt.SetErrorCode(err);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data, nullptr);
 			return err;
 		}
 
@@ -67,7 +67,7 @@ namespace lsbLogic
 
 		m_Log->Write(LV::DEBUG, "%s | Logout. session id : %d", __FUNCTION__, packet.SessionId);
 		resPkt.SetErrorCode(err);
-		m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data);
+		m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data, nullptr);
 
 		return ERROR_CODE::NONE;
 	}

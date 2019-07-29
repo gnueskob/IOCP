@@ -5,6 +5,7 @@ NET_ERROR_CODE AsyncIONetwork::SendPacket(
 	const int sessionId
 	, const short length
 	, char* const data
+	, Message* pProto
 	, const short headerLength
 	, char* const pHeader)
 {
@@ -18,10 +19,10 @@ NET_ERROR_CODE AsyncIONetwork::SendPacket(
 	// 헤더에서 버퍼 write 에러 체크 안해도 문제가 있으면 어짜피 body에서 발생함
 	if (headerLength > 0)
 	{
-		overlappedEx->bufferMngr.Write(pHeader, 0, headerLength, false);
+		overlappedEx->bufferMngr.Write(pHeader, nullptr, 0, headerLength, false);
 	}
 
-	auto isSuccess = overlappedEx->bufferMngr.Write(data, 0, length);
+	auto isSuccess = overlappedEx->bufferMngr.Write(data, pProto, 0, length);
 	if (isSuccess == false)
 	{
 		// 버퍼를 꽉 채울만큼 통신이 제대로 이뤄지지 않는 상황이므로 연결을 해제한다.

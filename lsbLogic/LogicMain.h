@@ -3,8 +3,7 @@
 #include <concurrent_queue.h>
 
 #include "../lsbIOCP/Define.h"
-
-#include "Packet.h"
+#include "Common/Packet.h"
 #include "LogicConfig.h"
 
 class Log;
@@ -27,7 +26,7 @@ namespace lsbLogic
 		// Manager pointer
 		void Init(LogicConfig m_Config);
 
-		void SendMsg(const int sessionId, const short packetId, const short length, char* data);
+		void SendMsg(const int sessionId, const short packetId, const short length, char* pData, Message* pProto);
 		void ForceClose(const int sessionId);
 		void ConnectServer(const int reqId, const char* ip, unsigned short port);
 

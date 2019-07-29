@@ -6,8 +6,8 @@
 
 #include "../lsbIOCP/Session.h"
 #include "../lsbIOCP/Log.h"
-#include "Packet.h"
-#include "ErrorCode.h"
+#include "Common/Packet.h"
+#include "Common/ErrorCode.h"
 #include "User.h"
 
 using ERROR_CODE = lsbLogic::ERROR_CODE;

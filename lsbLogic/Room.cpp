@@ -109,7 +109,7 @@ namespace lsbLogic
 				continue;
 			}
 
-			m_pLogicMain->SendMsg(pUser->GetSessionId(), packetId, dataSize, pData);
+			m_pLogicMain->SendMsg(pUser->GetSessionId(), packetId, dataSize, pData, nullptr);
 		}
 	}
 
@@ -127,7 +127,7 @@ namespace lsbLogic
 		auto packetId = static_cast<short>(PACKET_ID::ROOM_USER_LIST);
 		auto pktPtr = reinterpret_cast<char*>(&pkt);
 
-		m_pLogicMain->SendMsg(sessionId, packetId, sizeof(pkt), pktPtr);
+		m_pLogicMain->SendMsg(sessionId, packetId, sizeof(pkt), pktPtr, nullptr);
 	}
 
 	void Room::NotifyEnterUserInfo(const short userIndex, const char* pszUserID)

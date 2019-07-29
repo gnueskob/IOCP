@@ -1,7 +1,7 @@
 #include <tuple>
 
-#include "Packet.h"
-#include "ErrorCode.h"
+#include "Common/Packet.h"
+#include "Common/ErrorCode.h"
 #include "Room.h"
 #include "RoomManager.h"
 #include "User.h"
@@ -24,13 +24,13 @@ namespace lsbLogic
 
 		if (err != ERROR_CODE::NONE) {
 			resPkt.SetErrorCode(err);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return err;
 		}
 
 		if (pUser->IsCurStateLogin() == false) {
 			resPkt.SetErrorCode(ERROR_CODE::ROOM_ENTER_INVALID_DOMAIN);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return ERROR_CODE::ROOM_ENTER_INVALID_DOMAIN;
 		}
 
@@ -41,14 +41,14 @@ namespace lsbLogic
 			pRoom = m_pRoomMngr->RetreiveRoom();
 			if (pRoom == nullptr) {
 				resPkt.SetErrorCode(ERROR_CODE::ROOM_ENTER_EMPTY_ROOM);
-				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 				return ERROR_CODE::ROOM_ENTER_EMPTY_ROOM;
 			}
 
 			auto ret = pRoom->CreateRoom(reqPkt->RoomTitle);
 			if (ret != ERROR_CODE::NONE) {
 				resPkt.SetErrorCode(ret);
-				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 				return ret;
 			}
 
@@ -60,7 +60,7 @@ namespace lsbLogic
 			pRoom = std::get<1>(m_pRoomMngr->GetRoom(reqPkt->RoomIndex));
 			if (pRoom == nullptr) {
 				resPkt.SetErrorCode(ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX);
-				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+				m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 				return ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX;
 			}
 
@@ -72,7 +72,7 @@ namespace lsbLogic
 		auto enterRet = pRoom->EnterUser(pUser);
 		if (enterRet != ERROR_CODE::NONE) {
 			resPkt.SetErrorCode(enterRet);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return enterRet;
 		}
 
@@ -82,7 +82,7 @@ namespace lsbLogic
 		// 룸에 새 유저 들어왔다고 알린다
 		pRoom->NotifyEnterUserInfo(pUser->GetIndex(), pUser->GetId().c_str());
 
-		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 		m_Log->Write(LOG_LEVEL::INFO, "%s | Enter Room. sessionId(%d)", __FUNCTION__, packet.SessionId);
 
 		// send user list
@@ -104,7 +104,7 @@ namespace lsbLogic
 
 		if (errorCode != ERROR_CODE::NONE) {
 			resPkt.SetErrorCode(errorCode);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return errorCode;
 		}
 
@@ -112,21 +112,21 @@ namespace lsbLogic
 
 		if (pUser->IsCurStateRoom() == false) {
 			resPkt.SetErrorCode(ERROR_CODE::ROOM_LEAVE_INVALID_DOMAIN);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return ERROR_CODE::ROOM_LEAVE_INVALID_DOMAIN;
 		}
 
 		auto [err, pRoom] = m_pRoomMngr->GetRoom(pUser->GetRoomIndex());
 		if (pRoom == nullptr) {
 			resPkt.SetErrorCode(ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX;
 		}
 
 		auto leaveRet = pRoom->LeaveUser(userIndex);
 		if (leaveRet != ERROR_CODE::NONE) {
 			resPkt.SetErrorCode(leaveRet);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return leaveRet;
 		}
 
@@ -135,7 +135,7 @@ namespace lsbLogic
 		// 룸에 유저가 나갔음을 통보
 		pRoom->NotifyLeaveUserInfo(pUser->GetIndex());
 
-		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 		m_Log->Write(LOG_LEVEL::INFO, "%s | Leave Room. sessionId(%d)", __FUNCTION__, packet.SessionId);
 		return ERROR_CODE::NONE;
 	}
@@ -153,26 +153,26 @@ namespace lsbLogic
 
 		if (errorCode != ERROR_CODE::NONE) {
 			resPkt.SetErrorCode(errorCode);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return errorCode;
 		}
 
 		if (pUser->IsCurStateRoom() == false) {
 			resPkt.SetErrorCode(ERROR_CODE::ROOM_CHAT_INVALID_DOMAIN);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return ERROR_CODE::ROOM_CHAT_INVALID_DOMAIN;
 		}
 
 		auto [err, pRoom] = m_pRoomMngr->GetRoom(pUser->GetRoomIndex());
 		if (pRoom == nullptr) {
 			resPkt.SetErrorCode(ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX);
-			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 			return ERROR_CODE::ROOM_ENTER_INVALID_ROOM_INDEX;
 		}
 		auto MsgLength = reqPkt->MsgLength;
 		pRoom->NotifyChat(pUser->GetIndex(), reqPkt->Msg, MsgLength);
 
-		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data);
+		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, data, nullptr);
 		return ERROR_CODE::NONE;
 	}
 }

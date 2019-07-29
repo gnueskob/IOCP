@@ -6,7 +6,7 @@
 #include <map>
 
 #include "User.h"
-#include "ErrorCode.h"
+#include "Common/ErrorCode.h"
 
 using ERROR_CODE = lsbLogic::ERROR_CODE;
 

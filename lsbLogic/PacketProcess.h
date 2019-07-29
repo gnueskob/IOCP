@@ -6,8 +6,9 @@
 #include "ConnectedUserManager.h"
 #include "RoomManager.h"
 #include "UserManager.h"
-#include "Packet.h"
-#include "ErrorCode.h"
+#include "Common/Packet.h"
+#include "Common/ErrorCode.h"
+#include "Protobuf/Echo.pb.h"
 
 using ERROR_CODE = lsbLogic::ERROR_CODE;
 

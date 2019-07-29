@@ -1,10 +1,14 @@
 #pragma once
 
 #include <windows.h>
-
 #include <functional>
 
+#include <google/protobuf/message.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+
 #include "AsyncIOException.h"
+
+using namespace google::protobuf;
 
 class PacketBufferConfig
 {
@@ -59,9 +63,15 @@ public:
 
 	// Write n-bytes to packet buffer
 	// and increase write pointer in packet buffer to write data at that time
-	bool Write(char* pData, int startIndex, int size, bool relocate = true)
+	bool Write(char* pData, Message* pMsg, int startIndex, int size, bool relocate = true)
 	{
-		if (pData == nullptr || size == 0)
+		// 둘 중 하나만 인자로 받아야 함
+		if (((pData == nullptr) ^ (pMsg == nullptr)) == false)
+		{
+			ThrowErrorIf(true, WSAENOBUFS, "Can not write char* and IProto at the same time");
+		}
+
+		if (size == 0)
 		{
 			return true;
 		}
@@ -84,7 +94,17 @@ public:
 			return false;
 		}
 
-		CopyMemory(m_pPacketData + m_WritePos, pData + startIndex, size);
+		if (pData)
+		{
+			// 일반 char* 타입의 패킷형태이면 메모리 카피
+			CopyMemory(m_pPacketData + m_WritePos, pData + startIndex, size);
+		}
+		else if (pMsg)
+		{
+			// 프로토콜 버프라면
+			io::ArrayOutputStream os(m_pPacketData + m_WritePos, size);
+			pMsg->SerializeToZeroCopyStream(&os);
+		}
 		m_WritePos += size;
 
 		// 커서 위치 재정의 처리 여부
