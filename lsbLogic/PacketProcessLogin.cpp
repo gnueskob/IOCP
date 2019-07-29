@@ -12,8 +12,10 @@ namespace lsbLogic
 {
 	ERROR_CODE PacketProcess::Login(PacketInfo packet)
 	{
+		/*
 		PacketLoginRes resPkt;
 		auto reqPkt = reinterpret_cast<PacketLoginReq*>(packet.pData);
+		
 		auto err = m_pUserMngr->AddUser(packet.SessionId, reqPkt->szID);
 
 		auto packetId = static_cast<short>(PACKET_ID::LOGIN_RES);
@@ -31,6 +33,32 @@ namespace lsbLogic
 		m_Log->Write(LV::DEBUG, "%s | Login. id : %s, session Id : %d", __FUNCTION__, reqPkt->szID, packet.SessionId);
 		resPkt.SetErrorCode(err);
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, sizeof(resPkt), data, nullptr);
+		*/
+
+		lsbProto::LoginReq reqPkt;
+
+		io::ArrayInputStream is(packet.pData, packet.PacketBodySize);
+		reqPkt.ParseFromZeroCopyStream(&is);
+
+		auto err = m_pUserMngr->AddUser(packet.SessionId, reqPkt.id().c_str());
+
+		lsbProto::LoginRes resPkt;
+
+		auto packetId = static_cast<short>(PACKET_ID::LOGIN_RES);
+		resPkt.set_res(static_cast<google::protobuf::int32>(err));
+		auto sendSize = static_cast<short>(resPkt.ByteSize());
+		auto pProto = dynamic_cast<Message*>(&resPkt);
+
+		if (err != ERROR_CODE::NONE)
+		{
+			m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, nullptr, pProto);
+			return err;
+		}
+
+		m_pConnectedUserManager->SetLogin(packet.SessionId);
+
+		m_Log->Write(LV::DEBUG, "%s | Login. id : %s, session Id : %d", __FUNCTION__, reqPkt.id().c_str(), packet.SessionId);
+		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, nullptr, pProto);
 
 		return ERROR_CODE::NONE;
 	}

@@ -1,8 +1,8 @@
 syntax = "proto3";
 package lsbProto;
 
-message Error {
-  ErrorCode error = 1;
+// Error code result for response packet
+message Result {
   enum ErrorCode {
     NONE = 0;
 
@@ -34,4 +34,10 @@ message Error {
     ROOM_CHAT_INVALID_LOBBY_INDEX = 297;
     ROOM_CHAT_INVALID_ROOM_INDEX = 298;
   }
+  ErrorCode error = 1;
+}
+
+message UserInfo {
+  int32 index = 1;
+  string id = 2;
 }

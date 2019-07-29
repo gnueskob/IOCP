@@ -90,6 +90,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)../protobuf/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,7 +134,7 @@
     <ClInclude Include="ConnectedUserManager.h" />
     <ClInclude Include="LogicMain.h" />
     <ClInclude Include="PacketProcess.h" />
-    <ClInclude Include="Protobuf\Echo.pb.h" />
+    <ClInclude Include="Protobuf\Packet.pb.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="User.h" />
@@ -145,7 +146,7 @@
     <ClCompile Include="PacketProcess.cpp" />
     <ClCompile Include="PacketProcessLogin.cpp" />
     <ClCompile Include="PacketProcessRoom.cpp" />
-    <ClCompile Include="Protobuf\Echo.pb.cc" />
+    <ClCompile Include="Protobuf\Packet.pb.cc" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="UserManager.cpp" />

@@ -1,0 +1,33 @@
+syntax = "proto3";
+package lsbProto;
+
+// import "Define.proto";
+
+message Echo {
+  string msg = 1;
+}
+
+message LoginReq {
+  string id = 1;
+  string pw = 2;
+}
+
+message LoginRes {
+  int32 res = 1;
+}
+
+message LogoutReq {
+}
+
+message LogoutRes {
+  int32 res = 1;
+}
+
+message UserInfo {
+  int32 index = 1;
+  string id = 2;
+}
+
+message UserListRes {
+  repeated UserInfo user = 1;
+}

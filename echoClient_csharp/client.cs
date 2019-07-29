@@ -307,13 +307,13 @@ namespace echoClient_csharp
                 return;
             }
 
-            /*
+            /* previous packet format code
             var body = Encoding.UTF8.GetBytes(echoMsg.Text);
 
             PostSendPacket(PACKET_ID.PACKET_ID_ECHO_REQ, body);
             */
 
-            Echo echo = new Echo{ Msg = echoMsg.Text };
+            Echo echo = new Echo { Msg = echoMsg.Text };
 
             var body = echo.ToByteArray();
             PostSendPacket(PACKET_ID.PACKET_ID_ECHO_REQ, body);
@@ -379,11 +379,22 @@ namespace echoClient_csharp
 
         private void BtnLogin_Click(object sender, EventArgs e)
         {
+            /* previous packet format code
             var loginReq = new LoginReqPacket();
             loginReq.SetValue(idText.Text, pwText.Text);
-
+            
             PostSendPacket(PACKET_ID.PACKET_ID_LOGIN_REQ, loginReq.ToBytes());
-            Log.Write($"로그인 요청:  {idText.Text}, {pwText.Text}");
+            */
+
+            LoginReq loginReqProto = new LoginReq
+            {
+                Id = idText.Text,
+                Pw = pwText.Text,
+            };
+
+            PostSendPacket(PACKET_ID.PACKET_ID_LOGIN_REQ, loginReqProto.ToByteArray());
+
+            Log.Write($"로그인 요청:  {loginReqProto.Id}, {loginReqProto.Pw}");
         }
 
         private void BtnEnter_Click(object sender, EventArgs e)

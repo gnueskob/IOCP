@@ -1,8 +1,0 @@
-syntax = "proto3";
-package lsbProto;
-
-import "ErrorCode.proto";
-
-message Logout {
-  Error error = 1;
-}

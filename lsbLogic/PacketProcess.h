@@ -8,7 +8,7 @@
 #include "UserManager.h"
 #include "Common/Packet.h"
 #include "Common/ErrorCode.h"
-#include "Protobuf/Echo.pb.h"
+#include "Protobuf/Packet.pb.h"
 
 using ERROR_CODE = lsbLogic::ERROR_CODE;
 

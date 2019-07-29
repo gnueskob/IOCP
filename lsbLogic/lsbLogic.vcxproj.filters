@@ -57,7 +57,7 @@
     <ClInclude Include="Common\PacketID.h">
       <Filter>헤더 파일\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Protobuf\Echo.pb.h">
+    <ClInclude Include="Protobuf\Packet.pb.h">
       <Filter>헤더 파일\Protobuf</Filter>
     </ClInclude>
   </ItemGroup>
@@ -86,7 +86,7 @@
     <ClCompile Include="PacketProcessRoom.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Protobuf\Echo.pb.cc">
+    <ClCompile Include="Protobuf\Packet.pb.cc">
       <Filter>소스 파일\Protobuf</Filter>
     </ClCompile>
   </ItemGroup>

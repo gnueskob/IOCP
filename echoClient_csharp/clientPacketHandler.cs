@@ -2,7 +2,6 @@
 using System.Text;
 using System.Collections.Generic;
 using LsbProto;
-using Google.Protobuf;
 
 namespace echoClient_csharp
 {
@@ -43,7 +42,7 @@ namespace echoClient_csharp
 
         void PacketProcess_Echo(byte[] bodyData)
         {
-            /* previous packet form
+            /* previous packet format code
             string body = Encoding.UTF8.GetString(bodyData);
             */
 
@@ -61,12 +60,16 @@ namespace echoClient_csharp
 
         void PacketProcess_LoginResponse(byte[] bodyData)
         {
+            /* previous packet format code
             var responsePkt = new LoginResPacket();
             responsePkt.FromBytes(bodyData);
+            */
 
-            Log.Write($"로그인 결과:  {(ERROR_CODE)responsePkt.Result}");
+            LoginRes loginResProto = LoginRes.Parser.ParseFrom(bodyData);
 
-            if ((ERROR_CODE)responsePkt.Result == ERROR_CODE.ERROR_NONE)
+            Log.Write($"로그인 결과:  {(ERROR_CODE)loginResProto.Res}");
+
+            if ((ERROR_CODE)loginResProto.Res == ERROR_CODE.ERROR_NONE)
             {
                 btnLogin.Enabled = false;
                 btnLogout.Enabled = true;

@@ -92,23 +92,22 @@ namespace lsbLogic
 		std::memcpy(&resPkt.Data, reqPkt->Data, packetSize);
 
 		auto packetId = static_cast<short>(PACKET_ID::DEV_ECHO_RES);
-		// auto sendSize = static_cast<short>(sizeof(PacketEchoRes)) - (DEV_ECHO_DATA_MAX_SIZE - packetSize);
 		auto data = reinterpret_cast<char*>(&resPkt);
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, packetSize, data);
 		*/
 
-		lsbProto::Echo packetEcho;
+		lsbProto::Echo echoPkt;
 
 		// 받은 데이터 역직렬화 및 파싱
 		io::ArrayInputStream is(packet.pData, packet.PacketBodySize);
-		packetEcho.ParseFromZeroCopyStream(&is);
+		echoPkt.ParseFromZeroCopyStream(&is);
 
-		m_Log->Write(LV::DEBUG, "echo msg : %s", packetEcho.msg().c_str());
+		m_Log->Write(LV::DEBUG, "echo msg : %s", echoPkt.msg().c_str());
 
 		// Echo 서버이므로... 그대로 다시 전달
 		auto packetId = static_cast<short>(PACKET_ID::DEV_ECHO_RES);
-		auto sendSize = static_cast<short>(packetEcho.ByteSize());
-		auto proto = dynamic_cast<Message*>(&packetEcho);
+		auto sendSize = static_cast<short>(echoPkt.ByteSize());
+		auto proto = dynamic_cast<Message*>(&echoPkt);
 		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, nullptr, proto);
 
 		return ERROR_CODE::NONE;
