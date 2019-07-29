@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
+using LsbProto;
+using Google.Protobuf;
 
 namespace echoClient_csharp
 {
@@ -41,8 +43,12 @@ namespace echoClient_csharp
 
         void PacketProcess_Echo(byte[] bodyData)
         {
+            /* previous packet form
             string body = Encoding.UTF8.GetString(bodyData);
-            Log.Write($"Echo Res : {body}");
+            */
+
+            Echo echo = Echo.Parser.ParseFrom(bodyData);
+            Log.Write($"Echo Res : {echo.Msg}");
         }
 
         void PacketProcess_ErrorNotify(byte[] bodyData)

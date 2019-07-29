@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using LsbProto;
+using Google.Protobuf;
 
 namespace echoClient_csharp
 {
@@ -305,11 +307,18 @@ namespace echoClient_csharp
                 return;
             }
 
+            /*
             var body = Encoding.UTF8.GetBytes(echoMsg.Text);
 
             PostSendPacket(PACKET_ID.PACKET_ID_ECHO_REQ, body);
+            */
 
-            Log.Write($"Echo req:  {echoMsg.Text}, {body.Length}");
+            Echo echo = new Echo{ Msg = echoMsg.Text };
+
+            var body = echo.ToByteArray();
+            PostSendPacket(PACKET_ID.PACKET_ID_ECHO_REQ, body);
+
+            Log.Write($"Echo req:  {echo.Msg}, {body.Length}");
         }
 
         void AddRoomUserList(Int64 userUniqueId, string userID)
