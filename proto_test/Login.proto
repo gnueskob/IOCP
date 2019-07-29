@@ -1,0 +1,10 @@
+syntax="proto3";
+package = "lsbProto";
+
+import "ErrorCode.proto";
+
+message Login {
+  ErrorCode error = 1;
+  string id = 2;
+  string pw = 3;
+}
