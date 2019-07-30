@@ -66,13 +66,11 @@ namespace lsbLogic
 			{
 				pRoom->LeaveUser(pUser->GetIndex());
 				pRoom->NotifyLeaveUserInfo(pUser->GetIndex());
-					
-				m_Log->Write(LV::DEBUG, "%s | CloseSesson. Room Out %u", __FUNCTION__, pRoom->GetIndex());
 			}
 
 			m_pUserMngr->RemoveUser(packet.SessionId);
 
-			m_Log->Write(LV::DEBUG, "%s | CloseSesson. User logout %u", __FUNCTION__, pUser->GetIndex());
+			m_Log->Write(LV::INFO, "%s | CloseSesson. User logout %u", __FUNCTION__, pUser->GetIndex());
 		}
 
 		m_pConnectedUserManager->SetDisConnectSession(packet.SessionId);
@@ -97,19 +95,23 @@ namespace lsbLogic
 		*/
 
 		lsbProto::Echo echoPkt;
-
-		// 받은 데이터 역직렬화 및 파싱
-		io::ArrayInputStream is(packet.pData, packet.PacketBodySize);
-		echoPkt.ParseFromZeroCopyStream(&is);
+		auto pProto = dynamic_cast<Message*>(&echoPkt);
+		ParseDataToProto(pProto, packet.pData, packet.PacketBodySize);
 
 		m_Log->Write(LV::DEBUG, "echo msg : %s", echoPkt.msg().c_str());
 
-		// Echo 서버이므로... 그대로 다시 전달
+		// Echo 이므로... 그대로 다시 전달
 		auto packetId = static_cast<short>(PACKET_ID::DEV_ECHO_RES);
-		auto sendSize = static_cast<short>(echoPkt.ByteSize());
-		auto proto = dynamic_cast<Message*>(&echoPkt);
-		m_pLogicMain->SendMsg(packet.SessionId, packetId, sendSize, nullptr, proto);
+		// auto sendSize = static_cast<short>(echoPkt.ByteSize());
+		m_pLogicMain->SendProto(packet.SessionId, packetId, pProto);
 
 		return ERROR_CODE::NONE;
+	}
+
+	// 받은 데이터 역직렬화 및 파싱
+	bool PacketProcess::ParseDataToProto(Message* pProto, char* pData, short size)
+	{
+		io::ArrayInputStream is(pData, size);
+		return pProto->ParseFromZeroCopyStream(&is);
 	}
 }

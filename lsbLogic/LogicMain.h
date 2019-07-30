@@ -27,6 +27,7 @@ namespace lsbLogic
 		void Init(LogicConfig m_Config);
 
 		void SendMsg(const int sessionId, const short packetId, const short length, char* pData, Message* pProto);
+		void SendProto(const int sessionId, const short packetId, Message* pProto);
 		void ForceClose(const int sessionId);
 		void ConnectServer(const int reqId, const char* ip, unsigned short port);
 

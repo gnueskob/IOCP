@@ -36,3 +36,5 @@ namespace lsbLogic
 		ROOM_CHAT_INVALID_ROOM_INDEX = 298,
 	};
 }
+
+using ERROR_CODE = lsbLogic::ERROR_CODE;

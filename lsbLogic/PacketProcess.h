@@ -10,8 +10,6 @@
 #include "Common/ErrorCode.h"
 #include "Protobuf/Packet.pb.h"
 
-using ERROR_CODE = lsbLogic::ERROR_CODE;
-
 namespace lsbLogic
 {
 	class PacketProcess
@@ -37,6 +35,8 @@ namespace lsbLogic
 		ConnectedUserManager* m_pConnectedUserManager;
 
 	private:
+		bool ParseDataToProto(Message* pProto, char* pData, short size);
+
 		ERROR_CODE NtfSysConnctSession(PacketInfo packetInfo);
 
 		ERROR_CODE NtfSysCloseSession(PacketInfo packetInfo);

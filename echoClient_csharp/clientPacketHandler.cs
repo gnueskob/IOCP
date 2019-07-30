@@ -46,8 +46,8 @@ namespace echoClient_csharp
             string body = Encoding.UTF8.GetString(bodyData);
             */
 
-            Echo echo = Echo.Parser.ParseFrom(bodyData);
-            Log.Write($"Echo Res : {echo.Msg}");
+            Echo resPkt = Echo.Parser.ParseFrom(bodyData);
+            Log.Write($"Echo Res : {resPkt.Msg}");
         }
 
         void PacketProcess_ErrorNotify(byte[] bodyData)
@@ -65,11 +65,11 @@ namespace echoClient_csharp
             responsePkt.FromBytes(bodyData);
             */
 
-            LoginRes loginResProto = LoginRes.Parser.ParseFrom(bodyData);
+            LoginRes resPkt = LoginRes.Parser.ParseFrom(bodyData);
 
-            Log.Write($"로그인 결과:  {(ERROR_CODE)loginResProto.Res}");
+            Log.Write($"로그인 결과:  {(ERROR_CODE)resPkt.Res}");
 
-            if ((ERROR_CODE)loginResProto.Res == ERROR_CODE.ERROR_NONE)
+            if ((ERROR_CODE)resPkt.Res == ERROR_CODE.ERROR_NONE)
             {
                 btnLogin.Enabled = false;
                 btnLogout.Enabled = true;
@@ -81,12 +81,16 @@ namespace echoClient_csharp
 
         void PacketProcess_LogoutResponse(byte[] bodyData)
         {
+            /* previous packet format code
             var responsePkt = new LogoutResPacket();
             responsePkt.FromBytes(bodyData);
+            */
 
-            Log.Write($"로그아웃 결과: {(ERROR_CODE)responsePkt.Result}");
+            LogoutRes resPkt = LogoutRes.Parser.ParseFrom(bodyData);
 
-            if ((ERROR_CODE)responsePkt.Result == ERROR_CODE.ERROR_NONE)
+            Log.Write($"로그아웃 결과: {(ERROR_CODE)resPkt.Res}");
+
+            if ((ERROR_CODE)resPkt.Res == ERROR_CODE.ERROR_NONE)
             {
                 btnLogin.Enabled = true;
                 btnLogout.Enabled = false;
@@ -99,15 +103,19 @@ namespace echoClient_csharp
 
         void PacketProcess_RoomEnterResponse(byte[] bodyData)
         {
+            /* previous packet format code
             var responsePkt = new RoomEnterResPacket();
             responsePkt.FromBytes(bodyData);
+            */
 
-            Log.Write($"방 입장 결과:  {(ERROR_CODE)responsePkt.Result}");
+            RoomEnterRes resPkt = RoomEnterRes.Parser.ParseFrom(bodyData);
 
-            if ((ERROR_CODE)responsePkt.Result == ERROR_CODE.ERROR_NONE)
+            Log.Write($"방 입장 결과:  {(ERROR_CODE)resPkt.Res}");
+
+            if ((ERROR_CODE)resPkt.Res == ERROR_CODE.ERROR_NONE)
             {
-                curRoomNumberLabel.Text = responsePkt.RoomIndex.ToString();
-                roomLabel.Text = responsePkt.RoomTitle;
+                curRoomNumberLabel.Text = resPkt.RoomIndex.ToString();
+                roomLabel.Text = resPkt.RoomTitle;
                 btnCreate.Enabled = false;
                 btnEnter.Enabled = false;
                 btnLeave.Enabled = true;
@@ -116,22 +124,32 @@ namespace echoClient_csharp
 
         void PacketProcess_RoomNewUserNotify(byte[] bodyData)
         {
+            /* previous packet format code
             var notifyPkt = new RoomNewUserNtfPacket();
             notifyPkt.FromBytes(bodyData);
 
             AddRoomUserList(notifyPkt.UserUniqueId, notifyPkt.UserID);
+            */
 
-            Log.Write($"방에 새로 들어온 유저 받음");
+            RoomEnterNtf ntfPkt = RoomEnterNtf.Parser.ParseFrom(bodyData);
+
+            AddRoomUserList(ntfPkt.User.Index, ntfPkt.User.Id);
+
+            Log.Write($"방에 새로 들어온 유저 입장 : {ntfPkt.User.Id}");
         }
 
         void PacketProcess_RoomUserListNotify(byte[] bodyData)
         {
+            /* previous packet format code
             var notifyPkt = new RoomUserListNtfPacket();
             notifyPkt.FromBytes(bodyData);
+            */
 
-            for (int i = 0; i < notifyPkt.UserCount; ++i)
+            RoomUserListNtf ntfPkt = RoomUserListNtf.Parser.ParseFrom(bodyData);
+
+            foreach (var user in ntfPkt.User)
             {
-                AddRoomUserList(notifyPkt.UserUniqueIdList[i], notifyPkt.UserIDList[i]);
+                AddRoomUserList(user.Index, user.Id);
             }
 
             Log.Write($"방의 기존 유저 리스트 받음");
@@ -139,12 +157,16 @@ namespace echoClient_csharp
 
         void PacketProcess_RoomLeaveResponse(byte[] bodyData)
         {
+            /* previous packet format code
             var responsePkt = new RoomLeaveResPacket();
             responsePkt.FromBytes(bodyData);
+            */
 
-            Log.Write($"방 나가기 결과:  {(ERROR_CODE)responsePkt.Result}");
+            RoomLeaveRes resPkt = RoomLeaveRes.Parser.ParseFrom(bodyData);
 
-            if ((ERROR_CODE)responsePkt.Result == ERROR_CODE.ERROR_NONE)
+            Log.Write($"방 나가기 결과:  {(ERROR_CODE)resPkt.Res}");
+
+            if ((ERROR_CODE)resPkt.Res == ERROR_CODE.ERROR_NONE)
             {
                 ClearRoomInfo();
                 btnCreate.Enabled = true;
@@ -155,27 +177,42 @@ namespace echoClient_csharp
 
         void PacketProcess_RoomLeaveUserNotify(byte[] bodyData)
         {
+            /* previous packet format code
             var notifyPkt = new RoomLeaveUserNtfPacket();
             notifyPkt.FromBytes(bodyData);
-
+            
             RemoveRoomUserList(notifyPkt.UserUniqueId);
+            */
+
+            RoomLeaveNtf ntfPkt = RoomLeaveNtf.Parser.ParseFrom(bodyData);
+
+            RemoveRoomUserList(ntfPkt.UserIndex);
 
             Log.Write($"방에서 나간 유저 받음");
         }
 
         void PacketProcess_RoomChatResponse(byte[] bodyData)
         {
+            /* previous packet format code
             var responsePkt = new RoomChatResPacket();
             responsePkt.FromBytes(bodyData);
-            Log.Write($"방 채팅 요청 결과:  {(ERROR_CODE)responsePkt.Result}", LOG_LEVEL.ERROR);
+            */
+
+            RoomChatRes resPkt = RoomChatRes.Parser.ParseFrom(bodyData);
+
+            Log.Write($"방 채팅 요청 결과:  {(ERROR_CODE)resPkt.Res}", LOG_LEVEL.ERROR);
         }
 
         void PacketProcess_RoomChatNotify(byte[] bodyData)
         {
+            /* previous packet format code
             var responsePkt = new RoomChatNtfPacket();
             responsePkt.FromBytes(bodyData);
+            */
 
-            AddRoomChatMessageList(responsePkt.UserUniqueId, responsePkt.Message);
+            RoomChatNtf ntfPkt = RoomChatNtf.Parser.ParseFrom(bodyData);
+
+            AddRoomChatMessageList(ntfPkt.UserIndex, ntfPkt.Msg);
         }
     }
 }

@@ -84,6 +84,16 @@ namespace lsbLogic
 		m_pLogger->Write(LV::TRACE, "%s | Send Packet", __FUNCTION__);
 	}
 
+	void LogicMain::SendProto(const int sessionId, const short packetId, Message* pMsg)
+	{
+		auto bodyLength = static_cast<short>(pMsg->ByteSize());
+		auto totalSize = static_cast<short>(PACKET_HEADER_SIZE + bodyLength);
+		PacketHeader header{ totalSize, packetId, static_cast<unsigned char>(0) };
+		m_pLogger->Write(LV::DEBUG, "%s | packet size : %u, packet id : %u, body length %u", __FUNCTION__, totalSize, packetId, bodyLength);
+		m_pNetwork->SendPacket(sessionId, bodyLength, nullptr, pMsg, PACKET_HEADER_SIZE, reinterpret_cast<char*>(&header));
+		m_pLogger->Write(LV::TRACE, "%s | Send Proto", __FUNCTION__);
+	}
+
 	void LogicMain::ForceClose(const int sessionId)
 	{
 		m_pNetwork->DisconnectSocket(sessionId);

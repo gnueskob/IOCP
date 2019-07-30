@@ -313,12 +313,12 @@ namespace echoClient_csharp
             PostSendPacket(PACKET_ID.PACKET_ID_ECHO_REQ, body);
             */
 
-            Echo echo = new Echo { Msg = echoMsg.Text };
+            Echo reqPkt = new Echo { Msg = echoMsg.Text };
 
-            var body = echo.ToByteArray();
+            var body = reqPkt.ToByteArray();
             PostSendPacket(PACKET_ID.PACKET_ID_ECHO_REQ, body);
 
-            Log.Write($"Echo req:  {echo.Msg}, {body.Length}");
+            Log.Write($"Echo req:  {reqPkt.Msg}, {body.Length}");
         }
 
         void AddRoomUserList(Int64 userUniqueId, string userID)
@@ -386,29 +386,44 @@ namespace echoClient_csharp
             PostSendPacket(PACKET_ID.PACKET_ID_LOGIN_REQ, loginReq.ToBytes());
             */
 
-            LoginReq loginReqProto = new LoginReq
+            LoginReq reqPkt = new LoginReq
             {
                 Id = idText.Text,
                 Pw = pwText.Text,
             };
 
-            PostSendPacket(PACKET_ID.PACKET_ID_LOGIN_REQ, loginReqProto.ToByteArray());
+            PostSendPacket(PACKET_ID.PACKET_ID_LOGIN_REQ, reqPkt.ToByteArray());
 
-            Log.Write($"로그인 요청:  {loginReqProto.Id}, {loginReqProto.Pw}");
+            Log.Write($"로그인 요청:  {reqPkt.Id}, {reqPkt.Pw}");
         }
 
         private void BtnEnter_Click(object sender, EventArgs e)
         {
+            /* previous packet format code
             var requestPkt = new RoomEnterReqPacket();
             Int16.TryParse(roomNumber.Text, out Int16 roomNum);
+
             requestPkt.SetValue(false, roomNum, "");
 
             PostSendPacket(PACKET_ID.PACKET_ID_ROOM_ENTER_REQ, requestPkt.ToBytes());
+            */
+
+            Int32.TryParse(roomNumber.Text, out Int32 roomNum);
+            RoomEnterReq reqPkt = new RoomEnterReq
+            {
+                IsCreate = false,
+                RoomIndex = roomNum,
+                RoomTitle = "",
+            };
+
+            PostSendPacket(PACKET_ID.PACKET_ID_ROOM_ENTER_REQ, reqPkt.ToByteArray());
+
             Log.Write($"방 입장 요청:  {roomNumber.Text} 번");
         }
 
         private void BtnLeave_Click(object sender, EventArgs e)
         {
+            // No packet needed
             PostSendPacket(PACKET_ID.PACKET_ID_ROOM_LEAVE_REQ, null);
             Log.Write($"방 퇴장 요청:  {roomNumber.Text} 번");
         }
@@ -427,10 +442,21 @@ namespace echoClient_csharp
                 return;
             }
 
+            /* previous packet format code
             var requestPkt = new RoomEnterReqPacket();
             requestPkt.SetValue(true, 0, roomTitle.Text);
 
             PostSendPacket(PACKET_ID.PACKET_ID_ROOM_ENTER_REQ, requestPkt.ToBytes());
+            */
+
+            RoomEnterReq reqPkt = new RoomEnterReq
+            {
+                IsCreate = true,
+                RoomTitle = roomTitle.Text,
+            };
+
+            PostSendPacket(PACKET_ID.PACKET_ID_ROOM_ENTER_REQ, reqPkt.ToByteArray());
+
             Log.Write($"방 생성 요청");
         }
 
@@ -442,15 +468,26 @@ namespace echoClient_csharp
                 return;
             }
 
+            /* previous packet format code
             var requestPkt = new RoomChatReqPacket();
             requestPkt.SetValue(chat.Text);
 
             PostSendPacket(PACKET_ID.PACKET_ID_ROOM_CHAT_REQ, requestPkt.ToBytes());
+            */
+
+            RoomChatReq reqPkt = new RoomChatReq
+            {
+                Msg = chat.Text.Trim(),
+            };
+
+            PostSendPacket(PACKET_ID.PACKET_ID_ROOM_CHAT_REQ, reqPkt.ToByteArray());
+
             Log.Write($"방 채팅 요청");
         }
 
         private void BtnLogout_Click(object sender, EventArgs e)
         {
+            // No packet needed
             PostSendPacket(PACKET_ID.PACKET_ID_LOGOUT_REQ, null);
             Log.Write($"로그아웃 요청");
         }
