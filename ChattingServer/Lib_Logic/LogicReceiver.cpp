@@ -41,7 +41,7 @@ namespace lsbLogic
 		}
 
 		// Get rid of invalid packet
-		if (0 <= pPktHeader->Id && pPktHeader->Id <= static_cast<short>(PACKET_ID::MAX))
+		if (pPktHeader->Id < 0 && pPktHeader->Id > static_cast<short>(PACKET_ID::MAX))
 		{
 			return true;
 		}

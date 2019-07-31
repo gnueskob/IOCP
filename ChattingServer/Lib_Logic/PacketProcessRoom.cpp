@@ -152,7 +152,8 @@ namespace lsbLogic
 		}
 
 
-		auto enterRet = pRoom->EnterUser(pUser);
+		// auto enterRet = pRoom->EnterUser(pUser);
+		auto enterRet = pRoom->EnterUser(pUser->GetIndex(), pUser->GetSessionId(), pUser->GetId());
 		if (enterRet != ERROR_CODE::NONE) {
 			resPkt.set_res(static_cast<google::protobuf::int32>(enterRet));
 			m_pLogicMain->SendProto(packet.SessionId, packetId, pResProto);

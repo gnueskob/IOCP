@@ -25,8 +25,6 @@ namespace lsbLogic
 		void Start();
 		void Stop();
 		void Join();
-		void Run();
-		void ConnUsrMngrRun();
 
 		// Manager pointer
 		void Init(LogicConfig m_Config);
@@ -35,6 +33,10 @@ namespace lsbLogic
 		void SendProto(const int sessionId, const short packetId, Message* pProto);
 		void ForceClose(const int sessionId);
 		void ConnectServer(const int reqId, const char* ip, unsigned short port);
+
+	private:
+		void Run();
+		void ConnUsrMngrRun();
 
 	private:
 		/**************************************** INetworkReceiver ****************************************/
