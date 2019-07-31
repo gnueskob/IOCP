@@ -19,7 +19,7 @@ void Worker::HandleCompletion()
 {
 	constexpr ULONG		maxRemoveCount = 2;
 	constexpr BOOL		alertable = FALSE;
-	constexpr DWORD		waitTime = 5000;
+	constexpr DWORD		waitTime = INFINITE;
 	ULONG	removedNumber;
 	OVERLAPPED_ENTRY completionPortEntries[maxRemoveCount];
 
@@ -56,7 +56,7 @@ void Worker::HandleCompletion()
 // Process IO job having error
 void Worker::DispatchError(DWORD error, LPOVERLAPPED lpOverlapped, int sessionId)
 {
-	if (error == WAIT_TIMEOUT)
+	if (error == WAIT_TIMEOUT || error == ERROR_ABANDONED_WAIT_0)
 	{
 		return;
 	}
