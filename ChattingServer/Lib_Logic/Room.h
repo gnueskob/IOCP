@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <memory>
 
@@ -60,7 +60,7 @@ namespace lsbLogic
 		bool m_IsUsed = false;
 		// std::wstring m_Title;
 		std::string m_Title;
-		std::map<short, User*> m_UserList;
+		std::unordered_map<short, User*> m_UserList;
 
 		LogicMain* m_pLogicMain = nullptr;
 	};
