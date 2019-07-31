@@ -29,6 +29,7 @@ namespace lsbLogic
 			if (m_PacketQueue.try_pop(packetInfo) == false)
 			{
 				m_pConnUserMngr->LoginCheck();
+				Sleep(1);
 				continue;
 			}
 

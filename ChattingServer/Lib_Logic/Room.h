@@ -9,7 +9,12 @@
 #include "Common/Packet.h"
 #include "Common/ErrorCode.h"
 #include "User.h"
+
+#pragma warning( push )
+#pragma warning( disable : 4125 )
+#pragma warning( disable : 4127 )
 #include "Protobuf/Packet.pb.h"
+#pragma warning( pop )
 
 using ERROR_CODE = lsbLogic::ERROR_CODE;
 

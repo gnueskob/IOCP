@@ -1,6 +1,10 @@
 #pragma once
 
+#pragma warning( push )
+#pragma warning( disable : 4125 )
+#pragma warning( disable : 4127 )
 #include <google/protobuf/message.h>
+#pragma warning( pop )
 
 #include "Session.h"
 #include "ErrorCode.h"

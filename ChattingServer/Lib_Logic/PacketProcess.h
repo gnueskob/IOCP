@@ -8,7 +8,12 @@
 #include "UserManager.h"
 #include "Common/Packet.h"
 #include "Common/ErrorCode.h"
+
+#pragma warning( push )
+#pragma warning( disable : 4125 )
+#pragma warning( disable : 4127 )
 #include "Protobuf/Packet.pb.h"
+#pragma warning ( pop )
 
 namespace lsbLogic
 {

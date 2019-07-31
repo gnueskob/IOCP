@@ -3,8 +3,12 @@
 #include <windows.h>
 #include <functional>
 
+#pragma warning( push )
+#pragma warning( disable : 4125 )
+#pragma warning( disable : 4127 )
 #include <google/protobuf/message.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#pragma warning( pop )
 
 #include "AsyncIOException.h"
 
