@@ -30,17 +30,16 @@ int main()
 	myServer.Init(config);
 	myServer.Start();
 
-	std::thread logicThread([&]()
-		{
-			myServer.Run();
-		}
-	);
-
 	// TODO: key 입력 시 종료
 	char a;
-	std::cin >> a;
+	while (true)
+	{
+		std::cin >> a;
+		if (a == 'q') break;
+	}
 	myServer.Stop();
-	logicThread.join();
+
+	myServer.Join();
 
 	return 0;
 }

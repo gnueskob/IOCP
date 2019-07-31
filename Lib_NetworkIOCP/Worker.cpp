@@ -19,7 +19,7 @@ void Worker::HandleCompletion()
 {
 	constexpr ULONG		maxRemoveCount = 2;
 	constexpr BOOL		alertable = FALSE;
-	constexpr DWORD		waitTime = INFINITE;
+	constexpr DWORD		waitTime = 5000;
 	ULONG	removedNumber;
 	OVERLAPPED_ENTRY completionPortEntries[maxRemoveCount];
 

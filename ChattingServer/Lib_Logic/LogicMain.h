@@ -1,5 +1,8 @@
 #pragma once
 
+#include <chrono>
+#include <thread>
+#include <mutex>
 #include <concurrent_queue.h>
 
 #include "../../Lib_NetworkIOCP/Define.h"
@@ -21,7 +24,9 @@ namespace lsbLogic
 	public:
 		void Start();
 		void Stop();
+		void Join();
 		void Run();
+		void ConnUsrMngrRun();
 
 		// Manager pointer
 		void Init(LogicConfig m_Config);
@@ -46,6 +51,11 @@ namespace lsbLogic
 		void NotifyServerConnectingResult(const int sessionId, const int requrestId, const NET_ERROR_CODE error) override;
 
 	private:
+		std::thread* m_ConnUsrMngrRunner;
+		std::thread* m_Runner;
+		std::condition_variable m_cv;
+		std::mutex	m_PktProcLock;
+
 		AsyncIONetwork* m_pNetwork;
 		UserManager* m_pUserMngr;
 		RoomManager* m_pRoomMngr;

@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "../../Lib_NetworkIOCP/AsyncIONetwork.h"
 
 #include "ConnectedUserManager.h"
@@ -12,12 +14,39 @@ namespace lsbLogic
 	{
 		m_pNetwork->Start();
 		m_IsRun = true;
+
+		m_Runner = new std::thread(&LogicMain::Run, this);
+		m_ConnUsrMngrRunner = new std::thread(&LogicMain::ConnUsrMngrRun, this);
 	}
 
 	void LogicMain::Stop()
 	{
 		m_pNetwork->Stop();
 		m_IsRun = false;
+
+		PacketInfo exitSignal(PACKET_ID::SERVER_EXIT);
+		m_PacketQueue.push(exitSignal);
+		m_cv.notify_one();
+	}
+
+	void LogicMain::Join()
+	{
+		m_ConnUsrMngrRunner->join();
+		m_Runner->join();
+		m_pNetwork->Join();
+	}
+
+	void LogicMain::ConnUsrMngrRun()
+	{
+		std::chrono::seconds delay(5);
+		while (m_IsRun)
+		{
+			PacketInfo loginChk(PACKET_ID::SERVER_LOGIN_CHECK);
+			m_PacketQueue.push(loginChk);
+			m_cv.notify_one();
+
+			std::this_thread::sleep_for(delay);
+		}
 	}
 
 	void LogicMain::Run()
@@ -25,12 +54,22 @@ namespace lsbLogic
 		m_pLogger->Write(LV::TRACE, "%s | Run packet proc", __FUNCTION__);
 		while (m_IsRun)
 		{
+			std::unique_lock<std::mutex> lock(m_PktProcLock);
+
 			PacketInfo packetInfo;
-			if (m_PacketQueue.try_pop(packetInfo) == false)
+			m_cv.wait(lock, [&] { return m_PacketQueue.try_pop(packetInfo); });
+			lock.unlock();
+
+			if (packetInfo.PacketId == static_cast<short>(PACKET_ID::SERVER_LOGIN_CHECK))
 			{
 				m_pConnUserMngr->LoginCheck();
-				Sleep(1);
+				m_pLogger->Write(LV::DEBUG, "%s | Session login state check proc", __FUNCTION__);
 				continue;
+			}
+
+			if (packetInfo.PacketId == static_cast<short>(PACKET_ID::SERVER_EXIT))
+			{
+				break;
 			}
 
 			m_pPktProc->Process(packetInfo);
