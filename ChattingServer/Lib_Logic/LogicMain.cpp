@@ -88,7 +88,7 @@ namespace lsbLogic
 			config.bufferSize,
 			PACKET_HEADER_SIZE,
 			PACKET_MAX_SIZE,
-			config.ip,
+			config.ip.c_str(),
 			config.port,
 			config.name
 		};

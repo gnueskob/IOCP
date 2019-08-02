@@ -119,7 +119,7 @@ namespace lsbLogic
 
 		// m_UserList.erase(iter);
 		it->Clear();
-		auto RoomUserId = it - m_RoomUserList.begin();
+		auto RoomUserId = static_cast<short>(it - m_RoomUserList.begin());
 		m_RoomUserIdPool.push_back(RoomUserId);
 
 
