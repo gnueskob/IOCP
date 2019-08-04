@@ -114,6 +114,7 @@ namespace lsbLogic
 		m_pLogger->Write(LOG_LEVEL::INFO, "%s | Init Success", __FUNCTION__);
 	}
 
+	/*
 	void LogicMain::SendMsg(const int sessionId, const short packetId, const short length, char* pData, Message* pMsg)
 	{
 		// TODO: packet header를 각 res packet에 상속시켜 사용 -> Write 두번 할 필요가 없어짐
@@ -123,6 +124,7 @@ namespace lsbLogic
 		m_pNetwork->SendPacket(sessionId, length, pData, pMsg, PACKET_HEADER_SIZE, reinterpret_cast<char*>(&header));
 		m_pLogger->Write(LV::TRACE, "%s | Send Packet", __FUNCTION__);
 	}
+	*/
 
 	void LogicMain::SendProto(const int sessionId, const short packetId, Message* pMsg)
 	{
@@ -130,8 +132,26 @@ namespace lsbLogic
 		auto totalSize = static_cast<short>(PACKET_HEADER_SIZE + bodyLength);
 		PacketHeader header{ totalSize, packetId, static_cast<unsigned char>(0) };
 		m_pLogger->Write(LV::DEBUG, "%s | packet size : %u, packet id : %u, body length %u", __FUNCTION__, totalSize, packetId, bodyLength);
-		m_pNetwork->SendPacket(sessionId, bodyLength, nullptr, pMsg, PACKET_HEADER_SIZE, reinterpret_cast<char*>(&header));
-		m_pLogger->Write(LV::TRACE, "%s | Send Proto", __FUNCTION__);
+		
+		auto err = m_pNetwork->SendPacket(
+			sessionId
+			, bodyLength
+			, nullptr
+			, PACKET_HEADER_SIZE
+			, reinterpret_cast<char*>(&header)
+			, [&pMsg](char* writePos, int bodyLength) -> bool {
+				io::ArrayOutputStream os(writePos, bodyLength);
+				return pMsg->SerializeToZeroCopyStream(&os);
+			});
+
+		if (err != NET_ERROR_CODE::NONE)
+		{
+			m_pLogger->Write(LV::ERR, "%s | Can not send packet", __FUNCTION__);
+		}
+		else
+		{
+			m_pLogger->Write(LV::TRACE, "%s | Send Proto", __FUNCTION__);
+		}
 	}
 
 	void LogicMain::ForceClose(const int sessionId)

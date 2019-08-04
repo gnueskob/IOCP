@@ -17,7 +17,7 @@ namespace lsbLogic
 		std::tuple<ERROR_CODE, Room*> GetUsedRoom(const int index);
 
 	private:
-		short m_MaxRoomNumber;
+		short m_MaxRoomNumber = 0;
 		std::deque<int>			m_RoomIndexPool;
 		std::vector<Room>		m_RoomPool;
 	};

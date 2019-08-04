@@ -12,8 +12,12 @@
 #pragma warning( push )
 #pragma warning( disable : 4125 )
 #pragma warning( disable : 4127 )
+#pragma warning( disable : 6387 )
 #include "Protobuf/Packet.pb.h"
+#include <google/protobuf/message.h>
 #pragma warning ( pop )
+
+using namespace google::protobuf;
 
 namespace lsbLogic
 {
